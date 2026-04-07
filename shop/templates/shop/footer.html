@@ -1,0 +1,194 @@
+<!-- FOOTER -->
+<footer class="prime-footer">
+    <div class="container-fluid px-lg-5">
+        <div class="row g-5 align-items-center mb-5 pb-5 border-bottom border-secondary">
+            <div class="col-md-6">
+                <h2 class="display-3 fw-bold text-white mb-0" style="letter-spacing: -3px;">PRIME.</h2>
+                <p class="text-secondary fw-500 mt-2 fs-5" style="max-width: 400px;">Elevating modern living spaces with
+                    premium architectural hardware and sanitary collections.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="footer-socials d-flex gap-3 justify-content-md-end">
+                    <a href="#" class="social-btn"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-btn"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-btn"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-btn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 pt-3 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-title">Headquarters</h6>
+                <address class="footer-text mt-4">
+                    <a href="https://maps.google.com/?q=Metro+Complex,Convent+road,Vadakara" target="_blank"
+                        class="footer-link d-flex align-items-start gap-3">
+                        <i class="bi bi-geo-alt fs-5 text-primary"></i>
+                        <span>Metro Complex,<br>Convent road ,Vadakara</span>
+                    </a>
+                </address>
+                <div class="mt-4">
+                    <a href="tel:+919446887822" class="footer-link d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-telephone fs-5 text-primary"></i> +91 94468 87822
+                    </a>
+                    <a href="mailto:getconnect.prime@gmail.com" class="footer-link d-flex align-items-center gap-3">
+                        <i class="bi bi-envelope fs-5 text-primary"></i> getconnect.prime@gmail.com
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-title">Collections</h6>
+                <ul class="footer-nav mt-4">
+                    <li><a href="{% url 'category_products' 'Plumbing' %}">Architectural Plumbing</a></li>
+                    <li><a href="{% url 'category_products' 'Electrical' %}">Electrical Grids</a></li>
+                    <li><a href="{% url 'category_products' 'Sanitary' %}">Premium Sanitary</a></li>
+                    <li><a href="{% url 'category_products' 'Storage' %}">Storage Systems</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-title">Client Support</h6>
+                <ul class="footer-nav mt-4">
+                    <li><a href="{% url 'my_orders' %}">Track Your Order</a></li>
+                    <li><a href="{% url 'profile' %}">Account Security</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-title">Newsletter</h6>
+                <p class="footer-text mt-4 mb-3">Subscribe to receive updates on new arrivals and exclusive
+                    architectural resources.</p>
+                <form action="{% url 'subscribe_newsletter' %}" method="POST"
+                    class="newsletter-input-group position-relative mt-2">
+                    {% csrf_token %}
+                    <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                    <button type="submit"
+                        class="btn btn-primary position-absolute top-0 end-0 h-100 rounded-start-0 px-4"><i
+                            class="bi bi-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row align-items-center pt-4 border-top border-secondary footer-bottom">
+            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                <p class="small text-secondary mb-0">© 2026 PRIME HARDWARE. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <div class="d-inline-flex gap-4 small">
+                    <a href="#" class="text-secondary text-decoration-none hover-white">Privacy Policy</a>
+                    <a href="#" class="text-secondary text-decoration-none hover-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .prime-footer {
+        background-color: #0f172a;
+        /* Deep Slate */
+        padding: 5rem 0 2rem 0;
+        margin-top: 5rem;
+    }
+
+    .footer-title {
+        color: #f8fafc;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.85rem;
+    }
+
+    .footer-text {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .footer-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-nav li {
+        margin-bottom: 1rem;
+    }
+
+    .footer-nav a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-nav a:hover {
+        color: #ffffff;
+        transform: translateX(5px);
+    }
+
+    .footer-link {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+        color: #ffffff;
+    }
+
+    .social-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-btn:hover {
+        background-color: var(--bs-primary, #0d6efd);
+        border-color: var(--bs-primary, #0d6efd);
+        transform: translateY(-3px);
+    }
+
+    .border-secondary {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .newsletter-input-group .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        padding: 0.8rem 1.25rem;
+        border-radius: 8px;
+    }
+
+    .newsletter-input-group .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+    }
+
+    .newsletter-input-group .btn {
+        border-radius: 8px;
+    }
+
+    .hover-white:hover {
+        color: #ffffff !important;
+    }
+
+    .footer-bottom {
+        margin-top: 3rem;
+    }
+</style>

@@ -1,0 +1,213 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .orders-header { margin-bottom: 2rem; }
+    
+    .nav-tabs-custom {
+        display: flex;
+        gap: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 2.5rem;
+    }
+
+    .nav-link-item {
+        padding: 1rem 0;
+        text-decoration: none !important;
+        color: #64748b;
+        font-weight: 700;
+        position: relative;
+        transition: 0.3s;
+        border: none;
+        background: none;
+    }
+
+    .nav-link-item.active {
+        color: var(--primary);
+    }
+
+    .nav-link-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary);
+        border-radius: 10px;
+    }
+
+    .order-card {
+        background: white; border-radius: 24px; box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05); margin-bottom: 2rem;
+        transition: var(--transition); overflow: hidden;
+    }
+
+    .order-header {
+        background: #f8fafc; padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9;
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem; border-radius: 30px; font-weight: 700; font-size: 0.8rem;
+        text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .status-pending { background: #fff7ed; color: #c2410c; }
+    .status-shipped { background: #eff6ff; color: #1d4ed8; }
+    .status-delivered { background: #f0fdf4; color: #15803d; }
+    .status-cancelled { background: #fef2f2; color: #b91c1c; }
+
+    .product-item {
+        display: flex; align-items: center; gap: 1.5rem; padding: 1rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .order-product-img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
+
+    .purchased-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
+    }
+
+    .purchased-card {
+        background: white; border-radius: 22px; padding: 1.25rem;
+        border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1.25rem;
+        transition: 0.3s;
+    }
+
+    .purchased-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+    .reorder-btn {
+        width: 40px; height: 40px; border-radius: 12px; background: #f1f5f9;
+        display: flex; align-items: center; justify-content: center; color: var(--text-dark);
+        border: none; transition: 0.3s;
+    }
+
+    .reorder-btn:hover { background: var(--primary); color: white; }
+</style>
+
+<div class="orders-header">
+    <h1 class="fw-800">Account Registry</h1>
+    <p class="text-muted">Manage your premium history and reorder essentials.</p>
+</div>
+
+<div class="nav-tabs-custom">
+    <button class="nav-link-item active" onclick="showTab('history')" id="tab-history">Order History</button>
+    <button class="nav-link-item" onclick="showTab('products')" id="tab-products">Purchased Products</button>
+</div>
+
+<!-- ORDER HISTORY TAB -->
+<div id="history-view">
+    {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+        <div class="order-header">
+            <div class="d-flex align-items-center gap-3">
+                <span class="fw-800">#ORD-{{ order.id }}</span>
+                <span class="small fw-600 text-muted"><i class="bi bi-calendar3"></i> {{ order.created_at|date:"d M Y" }}</span>
+            </div>
+            <div class="status-badge {% if order.order_status == 'Placed' or order.order_status == 'Pending' %}status-pending{% elif order.order_status == 'Packed' or order.order_status == 'Shipped' %}status-shipped{% elif order.order_status == 'Delivered' %}status-delivered{% else %}status-cancelled{% endif %}">
+                {{ order.order_status }}
+            </div>
+        </div>
+        <div class="p-4">
+            {% for item in order.items.all %}
+            <div class="product-item">
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" class="order-product-img">
+                {% else %}
+                <div class="order-product-img bg-light d-flex align-items-center justify-content-center">
+                    <i class="bi bi-image text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="flex-grow-1">
+                    <h6 class="fw-700 mb-1">{{ item.product.name }}</h6>
+                    <div class="small fw-600 text-muted">Quantity: {{ item.quantity }} | ₹{{ item.price }}</div>
+                </div>
+                <div class="fw-800">₹{% widthratio item.price 1 item.quantity %}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="px-4 py-3 bg-light d-flex justify-content-between align-items-center">
+            <div class="fw-800 text-primary fs-5">Total: ₹{{ order.total_amount }}</div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'track_order' order.id %}" class="btn btn-sm btn-primary px-3 rounded-pill fw-700">Track</a>
+                <a href="{% url 'download_bill' order.id %}" class="btn btn-sm btn-outline-dark px-3 rounded-pill fw-700">Receipt</a>
+                {% if order.order_status == 'Placed' or order.order_status == 'Pending' %}
+                <a href="{% url 'delete_order' order.id %}" class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-700"
+                    onclick="return confirm('Are you sure you want to cancel this order?')">
+                    Cancel
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <div class="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px;">
+                <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+            </div>
+        </div>
+        <h3 class="fw-800">No orders yet</h3>
+        <p class="text-muted">You haven't placed any orders yet. Start shopping to fill your space with quality items.
+        </p>
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg px-5 rounded-pill mt-4">
+            Explore Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- PURCHASED PRODUCTS TAB -->
+<div id="products-view" style="display: none;">
+    <div class="purchased-grid">
+        {% for item in purchased_products %}
+        <div class="purchased-card">
+            {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" class="order-product-img" style="width: 70px; height: 70px; border-radius: 14px;">
+            {% else %}
+            <div class="order-product-img bg-light d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; border-radius: 14px;">
+                <i class="bi bi-image text-muted"></i>
+            </div>
+            {% endif %}
+            <div class="flex-grow-1">
+                <h6 class="fw-800 mb-0">{{ item.product.name }}</h6>
+                <div class="text-primary fw-700 small mb-1">Last Price: ₹{{ item.last_price }}</div>
+                <div class="text-muted extra-small fw-600" style="font-size: 0.7rem;">Ordered {{ item.total_qty }}x in total</div>
+            </div>
+            <a href="{% url 'add_to_cart' item.product.id %}" class="reorder-btn" title="Add to Cart Again">
+                <i class="bi bi-cart-plus-fill"></i>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="mb-4">
+                <div class="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 120px; height: 120px;">
+                    <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+                </div>
+            </div>
+            <h3 class="fw-800">No products purchased yet</h3>
+            <p class="text-muted">You haven't purchased any products yet. Start shopping to fill your space with quality items.
+            </p>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg px-5 rounded-pill mt-4">
+                Explore Products
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function showTab(type) {
+        document.getElementById('history-view').style.display = type === 'history' ? 'block' : 'none';
+        document.getElementById('products-view').style.display = type === 'products' ? 'block' : 'none';
+        
+        document.getElementById('tab-history').classList.toggle('active', type === 'history');
+        document.getElementById('tab-products').classList.toggle('active', type === 'products');
+    }
+</script>
+
+{% endblock %}

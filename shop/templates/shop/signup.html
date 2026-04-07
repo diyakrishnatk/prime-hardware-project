@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Prime</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #c5a059; /* Luxury Gold/Brass */
+            --primary-dark: #a68546;
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1; /* Brightened for dark background */
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --input-bg: rgba(255, 255, 255, 0.07);
+        }
+
+        body {
+            background: linear-gradient(rgba(10, 15, 25, 0.6), rgba(10, 15, 25, 0.6)), 
+                        url('{% static "images/auth_bg_premium.png" %}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            padding: 2rem 0;
+            color: var(--text-main);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(100px);
+            opacity: 0.1;
+            bottom: -50px;
+            left: -50px;
+            z-index: -1;
+        }
+
+        .signup-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 3.5rem 3rem;
+            border-radius: 40px;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signup-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .signup-card:hover::after {
+            left: 100%;
+            transition: 0.8s;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-area h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-area p, .text-muted {
+            color: var(--text-muted) !important;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            transition: 0.3s;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            font-size: 0.95rem;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-control-custom::placeholder {
+            color: #64748b;
+        }
+
+        .form-control-custom:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.15);
+            outline: none;
+        }
+
+        .form-control-custom:focus+i {
+            color: var(--primary);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px -5px rgba(197, 160, 89, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -10px rgba(197, 160, 89, 0.6);
+            letter-spacing: 2px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="mb-4">
+            <a href="javascript:history.back()" class="text-white text-decoration-none fw-bold opacity-75">
+                <i class="bi bi-arrow-left me-2"></i> Back
+            </a>
+        </div>
+        <div class="signup-card">
+            <div class="logo-area">
+                <h1>PRIME</h1>
+                <p class="text-muted">Join now to build your dream project.</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"
+                        style="border-radius: 12px; font-size: 0.9rem; font-weight: 600;">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="input-group-custom">
+                    <input type="text" name="username" class="form-control-custom" placeholder="Username" required>
+                    <i class="bi bi-person"></i>
+                </div>
+
+                <div class="input-group-custom">
+                    <input type="email" name="email" class="form-control-custom" placeholder="Email Address" required>
+                    <i class="bi bi-envelope"></i>
+                </div>
+
+                <div class="input-group-custom">
+                    <input type="password" name="password" class="form-control-custom" placeholder="Create Password"
+                        required>
+                    <i class="bi bi-lock"></i>
+                </div>
+
+                <div class="input-group-custom">
+                    <input type="password" name="confirm_password" class="form-control-custom"
+                        placeholder="Confirm Password" required>
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="terms" required>
+                        <label class="form-check-label small text-muted" for="terms">
+                            I agree to the <a href="#" class="text-primary text-decoration-none fw-600">Terms of
+                                Service</a> and <a href="#" class="text-primary text-decoration-none fw-600">Privacy
+                                Policy</a>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account?
+                <a href="/signin/">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

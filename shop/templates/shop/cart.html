@@ -1,0 +1,290 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .cart-header {
+        margin-bottom: 2rem;
+    }
+
+    .cart-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .cart-table thead th {
+        background: #f8fafc;
+        padding: 1.25rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        border: none;
+    }
+
+    .cart-table tbody td {
+        padding: 1.5rem 1.25rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .cart-item-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .qty-control {
+        display: inline-flex;
+        align-items: center;
+        background: #f1f5f9;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .qty-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: white;
+        color: var(--text-dark);
+        text-decoration: none;
+        font-weight: 700;
+        transition: var(--transition);
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .qty-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .qty-val {
+        padding: 0 1rem;
+        font-weight: 700;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 100px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px dashed #e2e8f0;
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: var(--text-dark);
+    }
+
+    .btn-checkout {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        margin-top: 1.5rem;
+    }
+
+    .remove-link {
+        color: #ef4444;
+        font-size: 0.85rem;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: var(--transition);
+    }
+
+    .remove-link:hover {
+        color: #dc2626;
+        text-decoration: underline;
+    }
+
+    .btn-book-now {
+        background: #f1f5f9;
+        color: var(--text-dark);
+        border-radius: 10px;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-book-now:hover {
+        background: #e2e8f0;
+    }
+</style>
+
+<div class="row cart-header">
+    <div class="col-12">
+        <h1 class="fw-800">Shopping Cart</h1>
+        <p class="text-muted">You have {{ cart|length }} items in your cart.</p>
+    </div>
+</div>
+
+{% if cart %}
+<div class="row g-4">
+    <!-- Items List -->
+    <div class="col-lg-8">
+        <div class="cart-card">
+            <div class="table-responsive">
+                <table class="table cart-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, item in cart.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if item.image %}
+                                    <img src="{{ item.image }}" class="cart-item-img" alt="{{ item.name }}">
+                                    {% else %}
+                                    <div
+                                        class="cart-item-img bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="fw-700 mb-1">{{ item.name }}</h6>
+                                        <div class="text-primary fw-600">₹{{ item.price }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="qty-control">
+                                    <a href="{% url 'decrease_cart' key %}" class="qty-btn"><i
+                                            class="bi bi-dash"></i></a>
+                                    <span class="qty-val">{{ item.quantity }}</span>
+                                    <a href="{% url 'increase_cart' key %}" class="qty-btn"><i
+                                            class="bi bi-plus"></i></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-700 text-dark">₹{{ item.total_item_price|default:0 }}</div>
+                                {% if item.quantity > 1 %}
+                                <div class="text-muted small">₹{{ item.price }} × {{ item.quantity }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex flex-column align-items-end gap-2">
+                                    <a href="{% url 'book_single_from_cart' key %}" class="btn-book-now"
+                                        title="Instant Booking">
+                                        <i class="bi bi-lightning-fill"></i> Instant Buy
+                                    </a>
+                                    <a href="{% url 'remove_from_cart' key %}" class="remove-link">
+                                        <i class="bi bi-trash3"></i> Remove
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'home' %}#products" class="text-decoration-none fw-700">
+                <i class="bi bi-arrow-left me-2"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Sidebar -->
+    <div class="col-lg-4">
+        <div class="summary-card">
+            <h4 class="fw-800 mb-4">Order Summary</h4>
+
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <span class="fw-700 text-dark">₹{{ total|default:0 }}</span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping</span>
+                <span class="text-success fw-700">Calculated later</span>
+            </div>
+            <div class="summary-item">
+                <span>Tax</span>
+                <span class="fw-700 text-dark">Included</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total Amount</span>
+                <span class="text-primary">₹{{ total|default:0 }}</span>
+            </div>
+
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-checkout">
+                Checkout Now <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted small">
+                    <i class="bi bi-shield-check me-1"></i> Secure and encrypted checkout
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <i class="bi bi-credit-card text-muted h4"></i>
+                    <i class="bi bi-wallet2 text-muted h4"></i>
+                    <i class="bi bi-bank text-muted h4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row py-5">
+    <div class="col-12 text-center">
+        <div class="mb-4">
+            <div class="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px;">
+                <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+            </div>
+        </div>
+        <h2 class="fw-800">Your cart is feeling lonely</h2>
+        <p class="text-muted mx-auto" style="max-width: 400px;">Looks like you haven't added anything to your cart yet.
+            Discover our premium essentials collection and start building.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg px-5 rounded-pill mt-4">
+            Browse Products
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

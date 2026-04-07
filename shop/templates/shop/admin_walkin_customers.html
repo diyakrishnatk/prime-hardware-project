@@ -1,0 +1,222 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .customer-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 2rem;
+    }
+
+    .walkin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .walkin-row {
+        background: white;
+        transition: var(--transition);
+        border-radius: 16px;
+    }
+
+    .walkin-row:hover {
+        transform: scale(1.005);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .walkin-row td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border: 1px solid #f1f5f9;
+        color: var(--text-main);
+    }
+
+    .walkin-row td:first-child { border-radius: 16px 0 0 16px; border-right: none; }
+    .walkin-row td:last-child { border-radius: 0 16px 16px 0; border-left: none; }
+
+    .btn-pos {
+        background: #0f172a;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .btn-pos:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .badge-walkin {
+        background: #fdf2f8;
+        color: #db2777;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+    .btn-register-modern {
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        color: white;
+        padding: 0.85rem 1.75rem;
+        border-radius: 14px;
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 0.9rem;
+        letter-spacing: -0.2px;
+    }
+
+    .btn-register-modern:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+        color: white;
+    }
+</style>
+
+<div class="intelligence-container">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">Walk-in Database</h1>
+            <p class="text-muted fw-600 mb-0">Manage offline customers and point-of-sale activities</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <button type="button" class="btn btn-outline-danger rounded-pill px-4 fw-bold" 
+                onclick="if(confirm('Are you absolutely sure you want to PERMANENTLY DELETE ALL WALK-IN CUSTOMERS? This cannot be undone.')) { document.getElementById('clear-walkins-form').submit(); }">
+                <i class="bi bi-trash3 me-2"></i> Clear All Registry
+            </button>
+            <form id="clear-walkins-form" method="POST" action="{% url 'admin_clear_walkins' %}" style="display:none;">
+                {% csrf_token %}
+            </form>
+            <a href="{% url 'add_walkin_customer' %}" class="btn-register-modern">
+                <i class="bi bi-person-plus-fill" style="font-size: 1.1rem;"></i> <span>REGISTER NEW CUSTOMER</span>
+            </a>
+        </div>
+    </div>
+    <!-- INTELLIGENCE REPORTING -->
+    <div class="customer-panel mb-4" style="padding: 1.5rem;">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.05) !important;">
+            <div class="fw-800 text-main d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Walk-in Activity Intelligence
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Register PDF
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_walkin_report' %}?type=today" target="_blank"><i class="bi bi-person-fill-add text-primary me-2"></i>Today's Registry</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_walkin_report' %}?type=month" target="_blank"><i class="bi bi-calendar-month text-success me-2"></i>Monthly Analytics</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_walkin_report' %}?type=year" target="_blank"><i class="bi bi-calendar-check text-warning me-2"></i>Annual Summary</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <p class="text-muted small mb-0 fw-500">Generate high-fidelity reports for walk-in customer acquisitions and offline traffic patterns.</p>
+            </div>
+            <div class="col-md-7">
+                <form action="{% url 'admin_walkin_report' %}" method="GET" target="_blank" class="row g-2 align-items-end justify-content-end">
+                    <input type="hidden" name="type" value="range">
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">From</label>
+                        <input type="date" name="start_date" class="form-control rounded-pill px-3" required style="font-size: 0.85rem;">
+                    </div>
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">To</label>
+                        <input type="date" name="end_date" class="form-control rounded-pill px-3" required style="font-size: 0.85rem;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-dark rounded-pill px-4 fw-bold">Range PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="customer-panel">
+        {% if customers %}
+        <div class="table-responsive">
+            <table class="walkin-table">
+                <thead>
+                    <tr class="text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--text-muted);">
+                        <th class="ps-4 pb-3">Client Identity</th>
+                        <th class="pb-3">Contact</th>
+                        <th class="pb-3">Address</th>
+                        <th class="pb-3">Registered</th>
+                        <th class="text-end pe-4 pb-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in customers %}
+                    <tr class="walkin-row">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-900" style="width: 42px; height: 42px;">
+                                    {{ c.name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-800">{{ c.name|title }}</div>
+                                    <span class="badge-walkin">Walk-in Client</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-700">{{ c.phone }}</div>
+                            <div class="text-muted small">{{ c.email|default:"No Email" }}</div>
+                        </td>
+                        <td>
+                            <div class="text-muted small" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ c.address|default:"Not Provided" }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-600">{{ c.added_at|date:"d M, Y" }}</div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                <a href="{% url 'admin_orders' %}?search={{ c.phone }}" class="btn-pos" style="background: transparent; color: var(--text-main); border: 1px solid #e2e8f0; height: 40px; display: flex; align-items: center;" title="View Purchase History">
+                                    <i class="bi bi-clock-history"></i> History
+                                </a>
+                                <a href="{% url 'admin_walkin_order' c.id %}" class="btn-pos" style="height: 40px; display: flex; align-items: center;">
+                                    <i class="bi bi-receipt-cutoff"></i> Create Bill
+                                </a>
+                                <form action="{% url 'delete_walkin_customer' c.id %}" method="POST" class="d-inline" onsubmit="return confirm('Permanently remove this customer records?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger border-0 rounded-circle" style="width: 40px; height: 40px; padding: 0;">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-people text-muted opacity-25" style="font-size: 4rem;"></i>
+            <h4 class="fw-800 text-muted mt-3">No Walk-in Customers Found</h4>
+            <p class="text-muted">Register your first offline customer to start offline billing.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

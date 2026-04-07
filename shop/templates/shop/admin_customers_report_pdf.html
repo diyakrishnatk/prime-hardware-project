@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_title }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        @frame content {
+            top: 1.5cm;
+            left: 1.5cm;
+            right: 1.5cm;
+            bottom: 3.5cm;
+        }
+        @frame footer {
+            -pdf-frame-content: footerContent;
+            bottom: 1cm;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+            height: 1cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #2c3e50;
+            line-height: 1.4;
+            font-size: 9pt;
+        }
+        .header-table {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .title-box {
+            border: 2.5pt solid #1a2a6c;
+            padding: 12px;
+            text-align: center;
+            background-color: #f8fbff;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #1a2a6c;
+            text-transform: uppercase;
+            letter-spacing: 1.5pt;
+        }
+        .company-name {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin-bottom: 5px;
+        }
+        .company-details {
+            color: #555;
+            font-size: 8pt;
+        }
+        .report-meta {
+            text-align: right;
+            font-size: 9pt;
+        }
+        .summary-table {
+            width: 100%;
+            margin-bottom: 25px;
+            border-collapse: collapse;
+        }
+        .summary-box-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+        }
+        .summary-label-cell {
+            border: 1.2pt solid #1a2a6c;
+            padding: 6px;
+            font-size: 7.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #1a2a6c;
+            text-align: center;
+            background-color: #ffffff;
+        }
+        .summary-value-cell {
+            border: 1.2pt solid #1a2a6c;
+            border-top: none;
+            padding: 12px 5px;
+            font-size: 14pt;
+            font-weight: bold;
+            text-align: center;
+            background-color: #f8fbff;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .data-table th {
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 8.5pt;
+            padding: 12px 5px;
+            border: 0.5pt solid #1a2a6c;
+        }
+        .data-table td {
+            padding: 10px 8px;
+            border: 0.5pt solid #e2e8f0;
+            font-size: 8.5pt;
+            vertical-align: middle;
+            color: #475569;
+        }
+        .row-even { background-color: #f8fbff; }
+        .row-odd { background-color: #ffffff; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .status-active { color: #059669; font-weight: bold; font-size: 7.5pt; }
+        .status-blocked { color: #dc2626; font-weight: bold; font-size: 7.5pt; }
+    </style>
+</head>
+<body>
+    <div class="title-box">
+        <div class="title">{{ report_title }}</div>
+    </div>
+
+    <table class="header-table">
+        <tr>
+            <td width="60%" style="vertical-align: top;">
+                <div class="company-name">PRIME HARDWARE</div>
+                <div class="company-details">
+                    Metro Complex, Convent road, Vadakara<br>
+                    Phone: +91 94468 87822 | Email: getconnect.prime@gmail.com
+                </div>
+            </td>
+            <td width="40%" align="right" style="vertical-align: top;">
+                <div class="report-meta">
+                    <b>Report ID:</b> #CUS-{{ generated_at|date:"Ymd" }}<br>
+                    <b>Date Generated:</b> {{ generated_at|date:"F d, Y" }}<br>
+                    <b>Time:</b> {{ generated_at|date:"H:i" }}<br>
+                    <b>Status:</b> Customer Directory
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="summary-table">
+        <tr>
+            <td width="25%" style="padding-right: 10px;">
+                <table class="summary-box-table">
+                    <tr><td class="summary-label-cell">Total Customers</td></tr>
+                    <tr><td class="summary-value-cell">{{ stats.total }}</td></tr>
+                </table>
+            </td>
+            <td width="25%" style="padding: 0 5px;">
+                <table class="summary-box-table">
+                    <tr><td class="summary-label-cell">Active Users</td></tr>
+                    <tr><td class="summary-value-cell">{{ stats.active }}</td></tr>
+                </table>
+            </td>
+            <td width="25%" style="padding: 0 5px;">
+                <table class="summary-box-table">
+                    <tr><td class="summary-label-cell">Blocked</td></tr>
+                    <tr><td class="summary-value-cell" style="color: #dc2626;">{{ stats.blocked }}</td></tr>
+                </table>
+            </td>
+            <td width="25%" style="padding-left: 10px;">
+                <table class="summary-box-table">
+                    <tr><td class="summary-label-cell">Regions</td></tr>
+                    <tr><td class="summary-value-cell">{{ stats.locations }}</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <h3>Customer Directory</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th bgcolor="#1a2a6c" width="20%">FullName/Username</th>
+                <th bgcolor="#1a2a6c" width="30%">Email Address</th>
+                <th bgcolor="#1a2a6c" width="15%">Phone</th>
+                <th bgcolor="#1a2a6c" width="15%">Location</th>
+                <th bgcolor="#1a2a6c" width="10%">ID</th>
+                <th bgcolor="#1a2a6c" width="10%">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr class="{% cycle 'row-odd' 'row-even' %}">
+                <td style="padding: 10px 15px;">
+                    <div style="font-weight: 500; color: #1e293b;">{{ customer.user.username }}</div>
+                    <div style="font-size: 7pt; color: #888;">Joined: {{ customer.user.date_joined|date:"d/m/Y" }}</div>
+                </td>
+                <td class="text-center">{{ customer.user.email }}</td>
+                <td class="text-center">{{ customer.phone }}</td>
+                <td class="text-center">{{ customer.location }}</td>
+                <td class="text-center" style="font-size: 7pt; color: #999;">#{{ customer.user.id }}</td>
+                <td class="text-center">
+                    <span class="{% if customer.user.is_active %}status-active{% else %}status-blocked{% endif %}">
+                        {% if customer.user.is_active %}ACTIVE{% else %}BLOCKED{% endif %}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center" style="padding: 30px;">No registered customers found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="footerContent" style="text-align: center; font-size: 8pt; color: #999;">
+        Page <pdf:pagenumber> of <pdf:pagecount> | PRIME HARDWARE - CUSTOMER INTELLIGENCE DIRECTORY
+    </div>
+</body>
+</html>

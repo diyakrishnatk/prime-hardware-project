@@ -1,0 +1,554 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --card-radius: 22px;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-red: #ef4444;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Page Fade-in Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dashboard-container {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* KPI CARDS */
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .kpi-card-custom {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .kpi-card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .kpi-card-custom::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        width: 80px;
+        height: 80px;
+        background: currentColor;
+        opacity: 0.03;
+        border-radius: 50%;
+    }
+
+    .kpi-icon-box {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .icon-total {
+        background: #eff6ff;
+        color: var(--accent-blue);
+    }
+
+    .icon-active {
+        background: #ecfdf5;
+        color: var(--accent-green);
+    }
+
+    .icon-blocked {
+        background: #fef2f2;
+        color: var(--accent-red);
+    }
+
+    .kpi-info h6 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-info h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 1.5rem;
+        overflow: hidden;
+    }
+
+    .table-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.5rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+    }
+
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* CUSTOM TABLE */
+    .customer-table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .customer-table-modern th {
+        padding: 1.25rem 1rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #f1f5f9;
+        text-align: left;
+    }
+
+    .customer-table-modern td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        transition: var(--transition);
+    }
+
+    .customer-table-modern tr:hover td {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .customer-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .avatar-modern {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .user-info .username {
+        font-weight: 700;
+        color: var(--text-main);
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    .user-info .join-date {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .contact-item {
+        font-size: 0.85rem;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    .contact-item i {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .status-badge-modern {
+        padding: 0.4rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .status-active-modern {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-blocked-modern {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .address-cell {
+        max-width: 200px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+    }
+
+    /* ACTION BUTTONS */
+    .action-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .btn-action-modern {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: var(--transition);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 1rem;
+        background: #fff;
+    }
+
+    .btn-toggle-modern {
+        color: #f59e0b;
+    }
+
+    .btn-toggle-modern:hover {
+        background: #fffbeb;
+        border-color: #f59e0b;
+        transform: scale(1.1);
+    }
+
+    .btn-delete-modern {
+        color: var(--accent-red);
+    }
+
+    .btn-delete-modern:hover {
+        background: #fef2f2;
+        border-color: var(--accent-red);
+        transform: scale(1.1);
+    }
+
+    /* EMPTY STATE */
+    .empty-modern {
+        text-align: center;
+        padding: 5rem 2rem;
+    }
+
+    .empty-modern i {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .empty-modern h4 {
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    /* DASHBOARD CONTROLS */
+    .search-ctrl {
+        position: relative;
+        min-width: 300px;
+    }
+
+    .search-ctrl i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-ctrl input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.75rem;
+        border-radius: 15px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: var(--transition);
+    }
+
+    .search-ctrl input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bold mb-1" style="letter-spacing: -1px;">Customer Intelligence</h1>
+            <p class="text-muted fw-500 mb-0">Total of {{ customers|length }} profiles managed</p>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-3">
+            <button type="button" class="btn bg-danger text-white rounded-pill px-4 fw-bold" 
+                onclick="if(confirm('Are you absolutely sure you want to PERMANENTLY DELETE ALL CUSTOMER PROFILES? This only removes regular customers, not staff.')) { document.getElementById('clear-customers-form').submit(); }">
+                <i class="bi bi-person-x-fill me-2"></i> Clear All Profiles
+            </button>
+            <form id="clear-customers-form" method="POST" action="{% url 'admin_clear_customers' %}" style="display:none;">
+                {% csrf_token %}
+            </form>
+            <a href="{% url 'admin_customers_report' %}" class="btn bg-success text-white rounded-pill px-4 fw-bold" target="_blank">
+                <i class="bi bi-file-earmark-pdf me-2"></i> Generate Directory
+            </a>
+            <span class="badge bg-white text-dark shadow-sm border px-3 py-2 rounded-pill font-weight-700">
+                <i class="bi bi-clock-history me-1 text-primary"></i> Last update: Just now
+            </span>
+        </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+        <a href="{% url 'admin_customers' %}" class="kpi-card-custom">
+            <div class="kpi-icon-box icon-total"><i class="bi bi-people-fill"></i></div>
+            <div class="kpi-info">
+                <h6>Total Users</h6>
+                <h3>{{ customers|length }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_customers' %}?status=active" class="kpi-card-custom">
+            <div class="kpi-icon-box icon-active"><i class="bi bi-person-check-fill"></i></div>
+            <div class="kpi-info">
+                <h6>Active Now</h6>
+                <h3>{{ active_count }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_customers' %}?status=blocked" class="kpi-card-custom">
+            <div class="kpi-icon-box icon-blocked"><i class="bi bi-person-x-fill"></i></div>
+            <div class="kpi-info">
+                <h6>Blocked Accounts</h6>
+                <h3>{{ blocked_count }}</h3>
+            </div>
+        </a>
+    </div>
+
+    <!-- INTELLIGENCE REPORTING -->
+    <div class="table-section mb-4" style="padding: 1.5rem; background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: var(--card-radius); border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft);">
+        <div class="table-header-custom" style="padding-bottom: 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
+            <div class="table-title" style="font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Customer Intelligence PDF
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Directory PDF
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_customers_report' %}?type=today" target="_blank"><i class="bi bi-person-fill-add text-primary me-2"></i>New Registrations</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_customers_report' %}?type=month" target="_blank"><i class="bi bi-calendar-month text-success me-2"></i>Monthly Directory</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_customers_report' %}?type=year" target="_blank"><i class="bi bi-calendar-check text-warning me-2"></i>Annual Growth</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <p class="text-muted small mb-0 fw-500">Generate segmented customer reports based on registration dates. Analyze growth trends and regional distribution.</p>
+            </div>
+            <div class="col-md-7">
+                <form action="{% url 'admin_customers_report' %}" method="GET" target="_blank" class="row g-2 align-items-end justify-content-end">
+                    <input type="hidden" name="type" value="range">
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">From</label>
+                        <input type="date" name="start_date" class="form-control rounded-pill px-3" required style="font-size: 0.85rem;">
+                    </div>
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">To</label>
+                        <input type="date" name="end_date" class="form-control rounded-pill px-3" required style="font-size: 0.85rem;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Range PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN TABLE SECTION -->
+    <div class="table-section">
+        <div class="table-header-custom">
+            <div class="table-title">
+                <i class="bi bi-card-list text-primary"></i> User Directory
+            </div>
+
+            <div class="search-ctrl">
+                <i class="bi bi-search"></i>
+                <input type="text" id="customerSearch" placeholder="Search by name, email or phone...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="customer-table-modern" id="customerTable">
+                <thead>
+                    <tr>
+                        <th>User Profile</th>
+                        <th>Status</th>
+                        <th>Contact Details</th>
+                        <th>Location</th>
+                        <th>Address</th>
+                        <th class="text-end">Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr class="customer-row">
+                        <td>
+                            <div class="customer-profile">
+                                <div class="avatar-modern">
+                                    {{ customer.user.username|slice:":1"|upper }}
+                                </div>
+                                <div class="user-info">
+                                    <span class="username">{{ customer.user.username }}</span>
+                                    <span class="join-date">Registered {{ customer.user.date_joined|date:"M Y" }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if customer.user.is_active %}
+                            <span class="status-badge-modern status-active-modern">
+                                <i class="bi bi-circle-fill" style="font-size: 6px;"></i> Active
+                            </span>
+                            {% else %}
+                            <span class="status-badge-modern status-blocked-modern">
+                                <i class="bi bi-circle-fill" style="font-size: 6px;"></i> Blocked
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="contact-item">
+                                <i class="bi bi-envelope"></i> {{ customer.user.email }}
+                            </div>
+                            <div class="contact-item mt-1">
+                                <i class="bi bi-phone"></i> {{ customer.phone }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-item" style="color: var(--accent-blue); font-weight: 700;">
+                                <i class="bi bi-geo-fill"></i> {{ customer.location|default:"Not set" }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="address-cell" title="{{ customer.address }}">
+                                {{ customer.address }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <!-- Toggle Status: GET is fine for toggle -->
+                                <a href="{% url 'toggle_customer' customer.id %}"
+                                    class="btn-action-modern btn-toggle-modern" title="Toggle Active/Blocked Status">
+                                    <i class="bi bi-shield-lock"></i>
+                                </a>
+                                <!-- Delete: Must be POST for safety -->
+                                <form method="POST" action="{% url 'delete_customer' customer.id %}"
+                                    onsubmit="return confirm('This will permanently delete the customer. Continue?')"
+                                    style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action-modern btn-delete-modern"
+                                        title="Delete Customer">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-modern">
+                                <i class="bi bi-people"></i>
+                                <h4>No customers yet</h4>
+                                <p class="text-muted">New registrations will appear here automatically.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Live Search Logic
+    document.getElementById('customerSearch').addEventListener('keyup', function () {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.customer-row');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(val) ? '' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

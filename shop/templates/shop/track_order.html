@@ -1,0 +1,343 @@
+﻿{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --card-radius: 28px;
+        --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .track-container {
+        padding: 4rem 0 7rem;
+        animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .track-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .track-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    }
+
+    /* TRACKING ENGINE */
+    .tracking-viz {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5rem 0;
+        position: relative;
+    }
+
+    .viz-line {
+        position: absolute;
+        top: 28px;
+        left: 5%;
+        right: 5%;
+        height: 2px;
+        background: #e2e8f0;
+        z-index: 1;
+    }
+
+    .viz-line-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--accent-blue);
+        transition: width 1s ease;
+    }
+
+    .viz-node {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .node-icon {
+        width: 58px;
+        height: 58px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #94a3b8;
+        transition: all 0.4s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .viz-node.active .node-icon {
+        background: var(--accent-blue);
+        border-color: var(--accent-blue);
+        color: white;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        transform: scale(1.1);
+    }
+
+    .node-label {
+        font-weight: 800;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .viz-node.active .node-label {
+        color: var(--text-main);
+    }
+
+    /* DATA BLOCK */
+    .intel-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        margin-bottom: 4rem;
+    }
+
+    .data-chip .label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .data-chip .value {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--text-main);
+    }
+
+    /* SPEC LIST */
+    .spec-table {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .spec-row {
+        padding: 1.5rem 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
+    }
+
+    .spec-row:last-child {
+        border-bottom: none;
+    }
+
+    .spec-row:hover {
+        background: #fbfcfe;
+    }
+
+    .total-footer {
+        background: var(--text-main);
+        color: white;
+        padding: 2rem 2.5rem;
+        border-radius: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-return {
+        background: #f8fafc;
+        color: var(--text-main);
+        padding: 1rem 2.5rem;
+        border-radius: 15px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s;
+    }
+
+    .btn-return:hover {
+        background: white;
+        color: var(--accent-blue);
+        border-color: var(--accent-blue);
+    }
+
+    @media (max-width: 768px) {
+        .tracking-viz {
+            flex-direction: column;
+            gap: 3rem;
+            align-items: flex-start;
+            margin: 3rem 0;
+        }
+
+        .viz-line {
+            display: none;
+        }
+
+        .viz-node {
+            flex-direction: row;
+            gap: 2rem;
+        }
+
+        .track-card {
+            padding: 2rem;
+        }
+    }
+</style>
+
+<div class="row track-container justify-content-center">
+    <div class="col-xl-9 col-lg-10">
+        <div class="track-card">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h1 class="fw-black mb-1" style="letter-spacing: -2px; font-size: 2.5rem;">Delivery Roadmap.</h1>
+                    <p class="text-muted fw-600 mb-0">Tracing the journey of your precision hardware</p>
+                </div>
+                <div class="text-end d-none d-sm-block">
+                    <div class="badge bg-white text-dark shadow-sm border px-3 py-2 rounded-pill fw-bold"
+                        style="font-size: 0.75rem;">
+                        <i class="bi bi-hash text-primary me-1"></i> ORD-{{ order.id }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Intel Summary -->
+            <div class="intel-summary">
+                <div class="data-chip">
+                    <div class="label">Initialized</div>
+                    <div class="value">{{ order.created_at|date:"d M, Y" }}</div>
+                </div>
+                <div class="data-chip">
+                    <div class="label">Financials</div>
+                    <div class="value">
+                        <span
+                            class="{% if order.payment_status == 'Paid' %}text-primary{% else %}text-danger{% endif %}">
+                            {{ order.payment_status|upper }}
+                        </span>
+                    </div>
+                </div>
+                <div class="data-chip">
+                    <div class="label">Logistics Engine</div>
+                    <div class="value text-primary">{{ order.order_status|title }}</div>
+                </div>
+            </div>
+
+            <!-- Tracking Viz -->
+            <div class="tracking-viz">
+                <div class="viz-line">
+                    <div class="viz-line-progress" 
+                        {% if order.order_status == 'Placed' %}style="width: 0%" 
+                        {% elif order.order_status == 'Packed' %}style="width: 33.3%" 
+                        {% elif order.order_status == 'Shipped' or order.order_status == 'Out for Delivery' %}style="width: 66.6%" 
+                        {% elif order.order_status == 'Delivered' %}style="width: 100%" 
+                        {% else %}style="width: 0%" 
+                        {% endif %}>
+                    </div>
+                </div>
+
+                <div class="viz-node active">
+                    <div class="node-icon"><i class="bi bi-layers-fill"></i></div>
+                    <div class="node-label">Placed</div>
+                </div>
+
+                <div class="viz-node {% if order.order_status != 'Placed' %}active{% endif %}">
+                    <div class="node-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <div class="node-label">Packed</div>
+                </div>
+
+                <div
+                    class="viz-node {% if order.order_status == 'Shipped' or order.order_status == 'Out for Delivery' or order.order_status == 'Delivered' %}active{% endif %}">
+                    <div class="node-icon"><i class="bi bi-truck"></i></div>
+                    <div class="node-label">Transit</div>
+                </div>
+
+                <div class="viz-node {% if order.order_status == 'Delivered' %}active{% endif %}">
+                    <div class="node-icon"><i class="bi bi-house-heart-fill"></i></div>
+                    <div class="node-label">Arrival</div>
+                </div>
+            </div>
+
+            <!-- Itemization -->
+            <div class="mt-5">
+                <div class="d-flex align-items-center mb-4 gap-3">
+                    <div style="width: 40px; height: 1px; background: #e2e8f0;"></div>
+                    <h5 class="fw-black text-main text-uppercase mb-0" style="font-size: 0.8rem; letter-spacing: 2px;">
+                        Manifest Specification</h5>
+                </div>
+
+                <div class="spec-table">
+                    {% for item in order.items.all %}
+                    <div class="spec-row">
+                        <div>
+                            <div class="fw-black text-main mb-1">{{ item.product.name|title }}</div>
+                            <div class="text-muted fw-700" style="font-size: 0.75rem;">QTY: {{ item.quantity }} UNIT{% if item.quantity > 1 %}S{% endif %}</div>
+                        </div>
+                        <div class="fw-black text-primary" style="font-size: 1.1rem;">₹{{ item.price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="total-footer">
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold opacity-75 text-uppercase"
+                            style="font-size: 0.7rem; letter-spacing: 1px;">Gross Valuation</span>
+                        <h3 class="fw-black mb-0">₹{{ order.total_amount }}</h3>
+                    </div>
+                    <i class="bi bi-shield-lock-fill fs-3 opacity-25"></i>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="text-center mt-5 pt-3">
+                <a href="{% url 'my_orders' %}" class="btn-return">
+                    <i class="bi bi-arrow-left-short fs-5 align-middle"></i> Order History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

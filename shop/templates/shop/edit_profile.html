@@ -1,0 +1,257 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ===== GLOSSY LIGHT-GLASS V2 ===== */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-accent: #2563eb;
+        --glass-text: #0f172a;
+        --glass-muted: #64748b;
+        --glass-border: rgba(37, 99, 235, 0.15);
+        --glass-shadow: rgba(0, 0, 0, 0.05);
+    }
+
+    .edit-master-glass {
+        min-height: 90vh;
+        background: radial-gradient(circle at 100% 0%, #dbeafe 0%, #f8fafc 40%);
+        padding: 5rem 0;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Soft mesh effect */
+    .edit-master-glass::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 86c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm66 3c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-46-43c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm20-46c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%232563eb' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+
+    .glass-edit-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 40px;
+        padding: 4rem;
+        position: relative;
+        box-shadow: 0 40px 100px var(--glass-shadow);
+    }
+
+    .glass-edit-header {
+        text-align: center;
+        margin-bottom: 4.5rem;
+    }
+
+    .avatar-prism {
+        width: 130px;
+        height: 130px;
+        border-radius: 40px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        margin: 0 auto 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        font-weight: 950;
+        color: white;
+        box-shadow: 0 15px 35px rgba(37, 99, 235, 0.2);
+        transform: rotate(-3deg);
+    }
+
+    .glass-edit-header h2 {
+        font-weight: 900;
+        font-size: 3rem;
+        color: var(--glass-text);
+        letter-spacing: -1.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .ident-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f1f5f9;
+        color: var(--glass-muted);
+        padding: 0.5rem 1.25rem;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    /* Glass Fields */
+    .field-group-glass {
+        margin-bottom: 2rem;
+    }
+
+    .glass-tag {
+        font-weight: 850;
+        font-size: 0.7rem;
+        color: var(--glass-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 5px;
+    }
+
+    .glass-input {
+        width: 100%;
+        padding: 1.1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.6);
+        border: 2px solid transparent;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--glass-text);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-input:focus {
+        background: #ffffff;
+        border-color: var(--glass-accent);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    .glass-input:disabled {
+        background: #f1f5f9;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    /* Sapphire Buttons */
+    .btn-sapphire {
+        padding: 1.25rem;
+        border-radius: 20px;
+        font-weight: 900;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .btn-sapphire-main {
+        background: var(--glass-accent);
+        color: white;
+        box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-sapphire-main:hover {
+        background: #1d4ed8;
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-sapphire-alt {
+        background: #f1f5f9;
+        color: var(--glass-muted);
+        text-decoration: none;
+    }
+
+    .btn-sapphire-alt:hover {
+        background: #e2e8f0;
+        color: var(--glass-text);
+    }
+</style>
+
+<div class="edit-master-glass">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-edit-card">
+                    <div class="glass-edit-header">
+                        <div class="avatar-prism">
+                            {{ request.user.username|slice:":1"|upper }}
+                        </div>
+                        <h2>Account Security</h2>
+                        <div class="ident-tag">
+                            <i class="bi bi-shield-check text-success"></i> Identity Verification Active
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="field-group-glass">
+                                    <label class="glass-tag">
+                                        <i class="bi bi-person-circle"></i> Username
+                                    </label>
+                                    <input type="text" value="{{ request.user.username }}" class="glass-input" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group-glass">
+                                    <label class="glass-tag">
+                                        <i class="bi bi-envelope"></i> Email Address
+                                    </label>
+                                    <input type="email" name="email" value="{{ request.user.email }}" class="glass-input"
+                                        placeholder="email@example.com" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-group-glass">
+                            <label class="glass-tag">
+                                <i class="bi bi-telephone"></i> Phone Number
+                            </label>
+                            <input type="text" name="phone" value="{{ customer.phone }}" class="glass-input"
+                                placeholder="+91 00000 00000">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="field-group-glass">
+                                    <label class="glass-tag">
+                                        <i class="bi bi-house"></i> Shipping Address
+                                    </label>
+                                    <textarea name="address" class="glass-input" rows="4"
+                                        placeholder="Your full delivery address...">{{ customer.address }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group-glass">
+                                    <label class="glass-tag">
+                                        <i class="bi bi-geo-alt"></i> Region / City
+                                    </label>
+                                    <input type="text" name="location" value="{{ customer.location|default:'' }}" class="glass-input"
+                                        placeholder="e.g. Kerala, India">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 d-flex flex-column gap-3">
+                            <button type="submit" class="btn-sapphire btn-sapphire-main">
+                                <i class="bi bi-check-circle-fill"></i> Synchronize Settings
+                            </button>
+                            <a href="{% url 'profile' %}" class="btn-sapphire btn-sapphire-alt">
+                                Discard Session
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

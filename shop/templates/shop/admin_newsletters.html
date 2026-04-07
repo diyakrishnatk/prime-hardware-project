@@ -1,0 +1,325 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --card-radius: 22px;
+        --accent-blue: #3b82f6;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Page Fade-in Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dashboard-container {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* KPI CARDS */
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .kpi-card-custom {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .kpi-card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .kpi-icon-box {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .icon-total {
+        background: #eff6ff;
+        color: var(--accent-blue);
+    }
+
+    .kpi-info h6 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-info h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 1.5rem;
+        overflow: hidden;
+    }
+
+    .table-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.5rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+    }
+
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* CUSTOM TABLE */
+    .subscriber-table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .subscriber-table-modern th {
+        padding: 1.25rem 1rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #f1f5f9;
+        text-align: left;
+    }
+
+    .subscriber-table-modern td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        transition: var(--transition);
+    }
+
+    .subscriber-table-modern tr:hover td {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* EMPTY STATE */
+    .empty-modern {
+        text-align: center;
+        padding: 5rem 2rem;
+    }
+
+    .empty-modern i {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .empty-modern h4 {
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    /* DASHBOARD CONTROLS */
+    .search-ctrl {
+        position: relative;
+        min-width: 300px;
+    }
+
+    .search-ctrl i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-ctrl input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.75rem;
+        border-radius: 15px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: var(--transition);
+    }
+
+    .search-ctrl input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bold mb-1" style="letter-spacing: -1px;">Newsletter Subscribers</h1>
+            <p class="text-muted fw-500 mb-0">Total of {{ subscribers|length }} people subscribed to updates</p>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-3">
+             <button type="button" class="btn btn-outline-danger rounded-pill px-4 fw-bold" 
+                onclick="if(confirm('Are you absolutely sure you want to PERMANENTLY DELETE ALL SUBSCRIBERS?')) { document.getElementById('clear-subs-form').submit(); }">
+                <i class="bi bi-trash3 me-2"></i> Clear Subscriber List
+            </button>
+            <form id="clear-subs-form" method="POST" action="{% url 'admin_clear_newsletters' %}" style="display:none;">
+                {% csrf_token %}
+            </form>
+             <span class="badge bg-white text-dark shadow-sm border px-3 py-2 rounded-pill font-weight-700">
+                <i class="bi bi-clock-history me-1 text-primary"></i> Last update: Just now
+            </span>
+        </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+        <a href="{% url 'admin_newsletters' %}" class="kpi-card-custom">
+            <div class="kpi-icon-box icon-total"><i class="bi bi-envelope-check-fill"></i></div>
+            <div class="kpi-info">
+                <h6>Total Subscribers</h6>
+                <h3>{{ subscribers|length }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_newsletters' %}?filter=today" class="kpi-card-custom">
+            <div class="kpi-icon-box" style="background: #ecfdf5; color: #10b981;"><i class="bi bi-calendar-event"></i></div>
+            <div class="kpi-info">
+                <h6>New Today</h6>
+                <h3>{{ new_today }}</h3>
+            </div>
+        </a>
+    </div>
+
+    <!-- MAIN TABLE SECTION -->
+    <div class="table-section">
+        <div class="table-header-custom">
+            <div class="table-title">
+                <i class="bi bi-card-list text-primary"></i> Subscriber Directory
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-ctrl">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="subscriberSearch" placeholder="Search by email...">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="subscriber-table-modern" id="subscriberTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Email Address</th>
+                        <th>Subscription Date</th>
+                        <th>Status</th>
+                        <th class="text-end">Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subscribers %}
+                    <tr class="subscriber-row">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <div class="fw-bold text-main">{{ sub.email }}</div>
+                        </td>
+                        <td>
+                            <div class="text-muted small fw-500">{{ sub.subscribed_at|date:"F d, Y" }}</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">{{ sub.subscribed_at|time:"h:i A" }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                <i class="bi bi-check-circle-fill me-1"></i> Active
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <form action="{% url 'delete_newsletter' sub.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Remove this subscriber from the list?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-pill p-2" title="Delete">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-modern">
+                                <i class="bi bi-envelope-open"></i>
+                                <h4>No subscribers yet</h4>
+                                <p class="text-muted">Marketing list is currently empty.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Live Search Logic
+    document.getElementById('subscriberSearch').addEventListener('keyup', function () {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.subscriber-row');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(val) ? '' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

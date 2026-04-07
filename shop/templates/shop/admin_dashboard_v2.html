@@ -1,0 +1,182 @@
+{% extends 'shop/admin_base.html' %}
+{% block content %}
+<style>
+    :root {
+        --bg-dark: #0f0f0f;
+        --card-bg: rgba(255, 255, 255, 0.08);
+        --card-blur: 12px;
+        --primary: #3b82f6;
+        --accent: #8b5cf6;
+        --text-light: #e5e7eb;
+        --radius: 16px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text-light);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--card-blur));
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+
+    .stat-title {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .badge {
+        background: var(--primary);
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: var(--radius);
+        margin-bottom: 0.5rem;
+    }
+
+    .list-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+<div class="container-fluid p-4">
+    <div class="glass-card">
+        <h2 class="mb-3">Welcome, Admin 👋</h2>
+        <p>Here's a fresh look at your store's performance.</p>
+    </div>
+    <div class="stats-grid">
+        <div class="glass-card">
+            <div class="stat-title">Products</div>
+            <div class="stat-number">{{ total_products }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Customers</div>
+            <div class="stat-number">{{ total_customers }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Orders</div>
+            <div class="stat-number">{{ total_orders }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Revenue</div>
+            <div class="stat-number">₹{{ total_revenue }}</div>
+        </div>
+    </div>
+    <h3 class="section-title mt-4">Order Status Overview</h3>
+    <div class="stats-grid">
+        <div class="glass-card">
+            <div class="stat-title">Placed</div>
+            <div class="stat-number">{{ placed_orders }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Packed</div>
+            <div class="stat-number">{{ packed_orders }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Shipped</div>
+            <div class="stat-number">{{ shipped_orders }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Out for Delivery</div>
+            <div class="stat-number">{{ out_for_delivery_orders }}</div>
+        </div>
+        <div class="glass-card">
+            <div class="stat-title">Delivered</div>
+            <div class="stat-number">{{ delivered_orders }}</div>
+        </div>
+    </div>
+    <h3 class="section-title mt-4">Low Stock Alerts</h3>
+    {% if low_stock_products %}
+    {% for product in low_stock_products %}
+    <div class="list-item">
+        <span>{{ product.name }}</span>
+        <span class="badge">{{ product.stock }} left</span>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="glass-card">All products are well stocked.</div>
+    {% endif %}
+    <h3 class="section-title mt-4">Active Promotions</h3>
+    {% if offer_products %}
+    {% for product in offer_products %}
+    <div class="list-item">
+        <span>{{ product.name }} – {{ product.offer_percent }}% OFF</span>
+        <a href="{% url 'admin_offers' %}">Edit</a>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="glass-card">No active promotions.</div>
+    {% endif %}
+    <h3 class="section-title mt-4">Recent Orders</h3>
+    {% if recent_orders %}
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in recent_orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.billing_name|default:order.customer.user.username|default:"Walk-in Client" }}</td>
+                <td>{{ order.order_status }}</td>
+                <td>₹{{ order.total_amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="glass-card">No recent orders.</div>
+    {% endif %}
+</div>
+{% endblock %}

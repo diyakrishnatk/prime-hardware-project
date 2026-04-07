@@ -1,0 +1,295 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --elite-bg: #0b0f19;
+        --elite-surface: #131b2d;
+        --elite-accent: #3b82f6;
+        --elite-accent-glow: rgba(59, 130, 246, 0.5);
+        --elite-text: #f8fafc;
+        --elite-muted: #94a3b8;
+    }
+
+    /* CUSTOM ELITE SCROLLBAR */
+    ::-webkit-scrollbar {
+        width: 8px;
+        background: var(--elite-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--elite-accent), #6366f1);
+        border-radius: 100px;
+        border: 2px solid var(--elite-bg);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #60a5fa;
+        box-shadow: 0 0 10px var(--elite-accent-glow);
+    }
+
+    .elite-portal {
+        background-color: var(--elite-bg);
+        color: var(--elite-text);
+        min-height: 100vh;
+        padding: 2rem 0; /* Compressed from 6rem */
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .elite-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    /* Core Product Stage */
+    .elite-stage {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem; /* Compressed from 5rem */
+        align-items: center;
+        background: var(--elite-surface);
+        border-radius: 40px;
+        padding: 3rem; /* Compressed from 5rem */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+        margin-bottom: 3rem;
+    }
+
+    .elite-visual-chamber {
+        position: relative;
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 30px;
+        height: 450px; /* Compressed from 650px */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .elite-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+        transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .elite-visual-chamber:hover .elite-img {
+        transform: scale(1.05) translateY(-5px);
+    }
+
+    .elite-specs h1 {
+        font-size: 3.5rem; /* Compressed from 5rem */
+        font-weight: 950;
+        letter-spacing: -3px;
+        line-height: 0.9;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .price-strip {
+        font-size: 3rem; /* Compressed from 4rem */
+        font-weight: 900;
+        color: var(--elite-accent);
+        text-shadow: 0 0 30px var(--elite-accent-glow);
+        margin-bottom: 2rem;
+        display: block;
+    }
+
+    .btn-tactical {
+        padding: 1.25rem 2.5rem; /* Compressed */
+        border-radius: 20px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.4s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.2rem;
+    }
+
+    .btn-primary { background: var(--elite-accent); color: white; box-shadow: 0 10px 20px var(--elite-accent-glow); }
+    .btn-primary:hover { transform: translateY(-3px); background: #60a5fa; color: white; }
+
+    .btn-outline { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255, 255, 255, 0.1); margin-top: 0.75rem; }
+    .btn-outline:hover { background: rgba(255, 255, 255, 0.1); color: var(--elite-accent); }
+
+    /* Tactical Review Section */
+    .review-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Compressed from 1fr 1.5fr */
+        gap: 3rem;
+    }
+
+    .form-card {
+        background: var(--elite-surface);
+        padding: 3rem; /* Compressed from 4rem */
+        border-radius: 35px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+    }
+
+    .feedback-item {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 2rem; /* Compressed from 3rem */
+        border-radius: 30px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: 0.4s;
+    }
+
+    .feedback-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--elite-accent);
+        transform: translateX(10px);
+    }
+
+    .star-radio-container {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        gap: 1.2rem;
+        margin: 2rem 0;
+    }
+    .star-radio-container label { font-size: 3rem; } /* Slightly compressed */
+
+    .elite-textarea {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: white;
+        width: 100%;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+        .elite-stage { grid-template-columns: 1fr; }
+        .review-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="elite-portal animate-up">
+    <div class="elite-container">
+        
+        <!-- PANE 1: CORE PRODUCT -->
+        <section class="elite-stage">
+            <div class="elite-visual-chamber">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="elite-img">
+                {% else %}
+                <i class="bi bi-cpu text-muted" style="font-size: 10rem;"></i>
+                {% endif %}
+            </div>
+
+            <div class="elite-specs">
+                <span class="text-primary fw-950 text-uppercase" style="letter-spacing: 5px; font-size: 0.9rem;">Verified Specification</span>
+                <h1>{{ product.name }}</h1>
+                
+                <div class="d-flex align-items-center gap-4 mb-5 pb-4 border-bottom border-secondary opacity-50">
+                    <div class="text-warning fs-3">
+                        {% for i in stars.full %}<i class="bi bi-star-fill"></i>{% endfor %}
+                        {% if stars.half %}<i class="bi bi-star-half"></i>{% endif %}
+                        {% for i in stars.empty %}<i class="bi bi-star"></i>{% endfor %}
+                    </div>
+                    <span class="fw-900 fs-4">{{ avg_rating }}</span>
+                    <span class="small fw-700 opacity-40"> &mdash; {{ feedbacks.count }} UNITS REPORTED</span>
+                </div>
+
+                <div class="price-strip">
+                    {% if product.is_offer %}
+                    ₹{{ product.get_offer_price|floatformat:2 }}
+                    <div class="fs-4 opacity-20 text-decoration-line-through mt-n2">₹{{ product.price }}</div>
+                    {% else %}
+                    ₹{{ product.price|floatformat:2 }}
+                    {% endif %}
+                </div>
+
+                <p class="fs-5 fw-300 opacity-70 mb-5" style="line-height: 1.8;">
+                    {{ product.description }}
+                </p>
+
+                {% if product.stock > 0 %}
+                <a href="{% url 'buy_now' product.id %}" class="btn-tactical btn-primary">
+                    INITIALIZE ORDER <i class="bi bi-lightning-charge-fill"></i>
+                </a>
+                <a href="{% url 'add_to_cart' product.id %}" class="btn-tactical btn-outline">
+                    ADD TO BUFFER <i class="bi bi-plus-circle"></i>
+                </a>
+                {% else %}
+                <div class="btn-tactical btn-outline opacity-30">ALL UNITS ALLOCATED</div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- PANE 2: TRANSMISSIONS -->
+        <section class="review-grid">
+            <div class="form-card">
+                <h2 class="fw-950 mb-3" style="letter-spacing: -1.5px;">Broadcast Intel</h2>
+                <p class="text-muted small mb-5">Share your field data with other Prime operators.</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="star-radio-container">
+                        {% for i in "54321"|make_list %}
+                        <input type="radio" name="rating" value="{{ i }}" id="er{{ i }}" required>
+                        <label for="er{{ i }}"><i class="bi bi-star-fill"></i></label>
+                        {% endfor %}
+                    </div>
+                    <textarea name="comment" class="elite-textarea" rows="5" placeholder="Encrypt your transmission..." required></textarea>
+                    <button type="submit" class="btn-tactical btn-primary w-100">SUBMIT TRANSMISSION</button>
+                </form>
+            </div>
+
+            <div class="feedback-feed">
+                <h2 class="fw-950 display-6 mb-5" style="letter-spacing: -2px;">Neural Logs History</h2>
+                {% for f in feedbacks %}
+                <div class="feedback-item">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center fw-950" style="width: 60px; height: 60px; font-size: 1.8rem; border: 3px solid rgba(255,255,255,0.1);">
+                                {{ f.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-900 text-white fs-4">{{ f.user.username|title }}</div>
+                                <div class="small opacity-40">UNIT LOGGED: {{ f.created_at|date:"d M Y"|upper }}</div>
+                            </div>
+                        </div>
+                        <div class="text-warning fs-5">
+                            {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= f.rating %}
+                            <i class="bi bi-star-fill"></i>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="fs-5 opacity-80" style="font-style: italic; border-left: 4px solid var(--elite-accent); padding-left: 2rem;">
+                        "{{ f.comment }}"
+                    </p>
+                </div>
+                {% empty %}
+                <div class="feedback-item text-center opacity-20 py-5">
+                    <i class="bi bi-radar display-1 mb-3 d-block"></i>
+                    <p class="fw-950">NO TRANSMISSIONS RECORDED IN SECTOR</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
+ck %}

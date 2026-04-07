@@ -1,0 +1,848 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ===== MODERN STARTUP TOKENS ===== */
+    :root {
+        --startup-primary: #6366f1;
+        /* Vibrant Indigo */
+        --startup-primary-soft: #e0e7ff;
+        --startup-dark: #0f172a;
+        --startup-gray: #64748b;
+        --startup-bg: #ffffff;
+        --startup-surface: #f8fafc;
+        --startup-radius: 20px;
+        --startup-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+        background-color: var(--startup-bg);
+        color: var(--startup-dark);
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero-lux {
+        height: 90vh;
+        background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.95)),
+        url("{% static 'images/project_hero.png' %}");
+        background-position: center 30%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-lux-content {
+        position: relative;
+        z-index: 2;
+        padding: 6rem;
+        max-width: 850px;
+        color: white;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: white;
+        margin-bottom: 2rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .hero-lux h1 {
+        font-size: clamp(3.2rem, 6vw, 4.8rem);
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: 2rem;
+        letter-spacing: -3px;
+    }
+
+    .hero-lux h1 span {
+        background: linear-gradient(135deg, #94a3b8 0%, #475569 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-lux p {
+        font-size: 1.25rem;
+        color: var(--lux-text-muted);
+        line-height: 1.6;
+        margin-bottom: 3.5rem;
+        max-width: 600px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .btn-lux {
+        padding: 1.25rem 3rem;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+    }
+
+    .btn-lux-primary {
+        background: white;
+        color: #0f172a;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-lux-primary:hover {
+        transform: translateY(-5px);
+        background: #f1f1f1;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-lux-outline {
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        background: rgba(255, 255, 255, 0.05);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+
+    .btn-lux-outline:hover {
+        border-color: white;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ===== BENTO GRID: STEALTH INDUSTRIAL ===== */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 380px);
+        gap: 2rem;
+        margin-bottom: 8rem;
+    }
+
+    .bento-item {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #e2e8f0;
+        /* Concrete Grey */
+        transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .bento-item:nth-child(1) {
+        grid-column: span 2;
+    }
+
+    .bento-item:nth-child(3) {
+        grid-row: span 2;
+    }
+
+    .bento-item:nth-child(5) {
+        grid-column: span 2;
+    }
+
+    .bento-bg-icon {
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        font-size: 15rem;
+        opacity: 0.03;
+        color: #0f172a;
+        transition: all 0.8s ease;
+        pointer-events: none;
+        transform: rotate(-15deg);
+    }
+
+    .bento-item:hover .bento-bg-icon {
+        transform: scale(1.2) rotate(0deg);
+        opacity: 0.1;
+        color: var(--lux-primary);
+    }
+
+    .bento-item::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 40%, rgba(255, 255, 255, 0.9) 100%);
+        z-index: 1;
+        opacity: 0.8;
+        transition: opacity 0.4s;
+    }
+
+    .bento-item:hover::before {
+        opacity: 0.9;
+    }
+
+    .bento-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 3rem;
+        z-index: 2;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bento-tag {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.65rem;
+        color: var(--lux-primary);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease 0.1s;
+    }
+
+    .bento-item:hover .bento-tag {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .bento-info h3 {
+        color: #0f172a;
+        font-weight: 900;
+        font-size: 2.75rem;
+        letter-spacing: -2px;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        line-height: 0.9;
+    }
+
+    .bento-info p {
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin: 0;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        opacity: 0.8;
+        transition: color 0.3s;
+    }
+
+    .bento-item:hover p {
+        color: #0f172a;
+        opacity: 1;
+    }
+
+    .bento-item:hover {
+        transform: scale(0.98);
+        border-color: var(--lux-primary);
+        box-shadow: 0 0 50px rgba(100, 116, 139, 0.15);
+    }
+
+    .bento-grid-lines {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.6;
+        z-index: 0;
+    }
+
+    .item-scanner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--lux-primary), transparent);
+        z-index: 3;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .bento-item:hover .item-scanner {
+        animation: scan 2s linear infinite;
+        opacity: 1;
+    }
+
+    @keyframes scan {
+        0% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(380px);
+        }
+    }
+
+    /* ===== LUX PRODUCT CARDS ===== */
+    .lux-prod-card {
+        background: white;
+        border-radius: 40px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .lux-prod-visual {
+        background: #f1f5f9;
+        border-radius: 28px;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .lux-prod-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 1.5rem;
+        transition: transform 0.6s ease;
+    }
+
+    .lux-prod-card:hover .lux-prod-visual img {
+        transform: scale(1.15);
+    }
+
+    .lux-prod-card h5 {
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: #0f172a;
+        margin-bottom: 1rem;
+    }
+
+    .lux-prod-footer {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .lux-prod-price {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: -1px;
+    }
+
+    .btn-action {
+        width: 50px;
+        height: 50px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+        font-size: 1.2rem;
+        text-decoration: none;
+    }
+
+    .btn-buy-now {
+        background: #0f172a;
+        color: white;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-buy-now:hover {
+        background: #6366f1;
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-add-cart {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .btn-add-cart:hover {
+        background: #e2e8f0;
+        transform: scale(1.1);
+        color: #6366f1;
+    }
+
+    /* ===== STARTUP PROMISE CARDS ===== */
+    .startup-promise {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
+        margin: 8rem 0;
+    }
+
+    .promise-card {
+        background: #f8fafc;
+        border-radius: 32px;
+        padding: 3.5rem 2.5rem;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .promise-card:hover {
+        transform: translateY(-15px);
+        background: white;
+        box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.1);
+        border-color: var(--startup-primary);
+    }
+
+    .promise-icon {
+        width: 70px;
+        height: 70px;
+        background: white;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--startup-primary);
+        margin-bottom: 2.5rem;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1);
+        transition: transform 0.4s ease;
+    }
+
+    .promise-card:hover .promise-icon {
+        transform: scale(1.1) rotate(-5deg);
+        background: var(--startup-primary);
+        color: white;
+    }
+
+    .promise-card h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+
+    .promise-card p {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .promise-number {
+        position: absolute;
+        top: -20px;
+        right: -10px;
+        font-size: 8rem;
+        font-weight: 900;
+        color: #0f172a;
+        opacity: 0.02;
+        transition: all 0.5s ease;
+    }
+
+    .promise-card:hover .promise-number {
+        opacity: 0.05;
+        transform: scale(1.1);
+    }
+
+    /* ===== LUX ABOUT: DARK THEME ===== */
+    .lux-about-section {
+        background: #0f172a;
+        padding: 8rem 0;
+        margin: 6rem 0;
+        border-radius: 40px;
+    }
+
+    .lux-about-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6rem;
+        align-items: center;
+        padding: 0 4rem;
+    }
+
+    .lux-about-content h2 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 2rem;
+        letter-spacing: -1px;
+        color: #ffffff;
+    }
+
+    .lux-about-content p.lead-text {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        line-height: 1.8;
+        margin-bottom: 3rem;
+        font-weight: 400;
+        max-width: 95%;
+    }
+
+    .about-visual {
+        position: relative;
+        height: 600px;
+        border-radius: 40px;
+        background: url("{% static 'images/about_dark.png' %}") center/cover no-repeat;
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .about-visual::before {
+        content: '';
+        position: absolute;
+        inset: -15px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        z-index: -1;
+    }
+
+    .about-visual-overlay {
+        position: absolute;
+        bottom: 30px;
+        left: -30px;
+        background: rgba(15, 23, 42, 0.95);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 25px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 90%;
+    }
+
+    /* ===== CONTACT LUX DARK ===== */
+    .contact-lux-dark {
+        background: #0f172a;
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: 6rem;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+    }
+
+    .contact-lux-info {
+        padding: 5rem;
+        color: white;
+    }
+
+    .contact-lux-info h2 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        letter-spacing: -1.5px;
+    }
+
+    .contact-lux-info p {
+        color: #94a3b8;
+        margin-bottom: 4rem;
+        font-size: 1.15rem;
+    }
+
+    .c-item {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+        align-items: center;
+    }
+
+    .c-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--lux-primary);
+    }
+
+    .c-text .label {
+        font-size: 0.85rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .c-text .value {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1200px) {
+        .hero-lux {
+            grid-template-columns: 1fr;
+            min-height: auto;
+            padding-bottom: 2rem;
+        }
+
+        .hero-lux-visual {
+            height: 400px;
+            order: 2;
+        }
+
+        .hero-lux-content {
+            padding: 4rem 2rem;
+            order: 1;
+        }
+
+        .bento-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(4, 320px);
+        }
+
+        .lux-about-wrap {
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+
+        .contact-lux-dark {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .newsletter-visual-intel {
+        height: 500px;
+        background: url('{% static "images/newsletter_bg.png" %}') center/cover no-repeat;
+        opacity: 0.6;
+        filter: grayscale(1);
+    }
+</style>
+
+<div class="animate-up">
+    <!-- HERO SECTION -->
+    <section class="hero-lux">
+        <div class="hero-lux-content">
+            <div class="hero-badge">
+                <i class="bi bi-rocket-takeoff me-2"></i> Elevating Modern Kerala Living
+            </div>
+            <h1>Prime <span>Hardwares</span> & Sanitary.</h1>
+            <p>Your "matching" choice for high-quality pipes, designer taps, luxury basins, and elite bathroom fittings.
+                Engineering excellence for the Kerala skyline.</p>
+            <div class="hero-actions">
+                <a href="{% url 'all_products' %}" class="btn-lux btn-lux-primary">Explore Catalog <i
+                        class="bi bi-arrow-right"></i></a>
+                <a href="#about" class="btn-lux btn-lux-outline">Our Story</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORY BENTO GRID -->
+    <section class="container mb-5 mt-5">
+        <div class="row align-items-end mb-5">
+            <div class="col-lg-6">
+                <p class="text-primary fw-900 text-uppercase" style="letter-spacing: 4px; font-size: 0.8rem;">Architectural Systems</p>
+                <h2 class="display-3 fw-900 text-dark mb-0" style="letter-spacing: -3px; line-height: 0.8;">The Collections.</h2>
+            </div>
+        </div>
+
+        <div class="bento-grid">
+            <a href="{% url 'category_products' 'Plumbing' %}" class="bento-item">
+                <i class="bi bi-droplet-half bento-bg-icon"></i>
+                <div class="item-scanner"></div>
+                <div class="bento-info">
+                    <span class="bento-tag">System 01</span>
+                    <h3>Plumbing</h3>
+                    <p>Heavy duty drainage & supply systems</p>
+                </div>
+            </a>
+
+            <a href="{% url 'category_products' 'Electrical' %}" class="bento-item">
+                <i class="bi bi-lightning-charge bento-bg-icon"></i>
+                <div class="item-scanner"></div>
+                <div class="bento-info">
+                    <span class="bento-tag">System 02</span>
+                    <h3>Electrical</h3>
+                    <p>Industrial grade grids & wiring</p>
+                </div>
+            </a>
+
+            <a href="{% url 'category_products' 'Hardware' %}" class="bento-item">
+                <i class="bi bi-hammer bento-bg-icon"></i>
+                <div class="item-scanner"></div>
+                <div class="bento-info">
+                    <span class="bento-tag">System 03</span>
+                    <h3>Hardware</h3>
+                    <p>Precision tools & joinery hardware</p>
+                </div>
+            </a>
+
+            <a href="{% url 'category_products' 'Sanitary' %}" class="bento-item">
+                <i class="bi bi-water bento-bg-icon"></i>
+                <div class="item-scanner"></div>
+                <div class="bento-info">
+                    <span class="bento-tag">System 04</span>
+                    <h3>Sanitary</h3>
+                    <p>Elite bathroom & kitchen wellness</p>
+                </div>
+            </a>
+
+            <a href="{% url 'category_products' 'Storage' %}" class="bento-item">
+                <i class="bi bi-layers-half bento-bg-icon"></i>
+                <div class="item-scanner"></div>
+                <div class="bento-info">
+                    <span class="bento-tag">System 05</span>
+                    <h3>Storage</h3>
+                    <p>Optimized architectural shelving</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="mb-5 pb-5">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <p class="text-primary fw-900 text-uppercase" style="letter-spacing: 4px; font-size: 0.8rem;">Select
+                    Specimens</p>
+                <h2 class="display-4 fw-900 text-dark" style="letter-spacing: -2px;">Featured Materials.</h2>
+            </div>
+            <a href="{% url 'all_products' %}" class="btn btn-outline-dark rounded-pill px-5 fw-900"
+                style="letter-spacing: 1px; border-width: 2px;">View Warehouse</a>
+        </div>
+
+        <div class="row g-5">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-6">
+                {% include 'shop/product_card_partial.html' %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- STARTUP PROMISE SECTION -->
+    <section class="startup-promise">
+        <div class="promise-card">
+            <div class="promise-number">01</div>
+            <div class="promise-icon"><i class="bi bi-box-seam"></i></div>
+            <h3>Curated Selection</h3>
+            <p>500+ handpicked premium hardwares & sanitary items from global brands.</p>
+        </div>
+        <div class="promise-card">
+            <div class="promise-number">02</div>
+            <div class="promise-icon"><i class="bi bi-truck"></i></div>
+            <h3>Smart Delivery</h3>
+            <p>Rapid logistics and express shipping directly to your project site.</p>
+        </div>
+        <div class="promise-card">
+            <div class="promise-number">03</div>
+            <div class="promise-icon"><i class="bi bi-headset"></i></div>
+            <h3>Expert Support</h3>
+            <p>Technical guidance and material estimations by our professional team.</p>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <div class="lux-about-section">
+        <section id="about" class="lux-about-wrap">
+            <div class="lux-about-content">
+                <p class="text-primary fw-800 text-uppercase letter-spacing-2 mb-3">Our Vision</p>
+                <h2>Elevating Modern Living Spaces.</h2>
+                <p class="lead-text">We curate sophisticated hardware and sanitary collections designed to enhance both
+                    residential and commercial projects. Our commitment is to offer resilient, aesthetically superior
+                    products that meet the highest standards of contemporary design.</p>
+                <div class="row g-4 pt-4">
+                    <div class="col-sm-6">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="text-primary fs-3"><i class="bi bi-gem"></i></div>
+                            <div>
+                                <h6 class="fw-800 text-white mb-1">Premium Selection</h6>
+                                <p class="small text-secondary">Carefully vetted for superior quality.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="text-primary fs-3"><i class="bi bi-layers"></i></div>
+                            <div>
+                                <h6 class="fw-800 text-white mb-1">Expert Curation</h6>
+                                <p class="small text-secondary">Tailored aesthetics for modern interiors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-visual">
+                <div class="about-visual-overlay">
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="fs-1 text-primary"><i class="bi bi-quote"></i></div>
+                        <div>
+                            <p class="fs-6 fw-700 text-white mb-1">"Architecture starts when you carefully put two
+                                bricks together. There it begins."</p>
+                            <p class="small text-secondary mb-0 text-uppercase letter-spacing-2"
+                                style="font-size: 0.7rem;">— Ludwig Mies van der Rohe</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CONTACT LUX DARK -->
+    <section id="contact" class="contact-lux-dark">
+        <div class="contact-lux-info">
+            <p class="text-primary fw-800 text-uppercase letter-spacing-2 mb-3">Get In Touch</p>
+            <h2>Let's Build It Together.</h2>
+            <p>Our technical experts are ready to assist you with material selection and project estimates.</p>
+
+            <div class="contact-flex">
+                <div class="c-item">
+                    <div class="c-icon"><i class="bi bi-geo-alt"></i></div>
+                    <div class="c-text">
+                        <div class="label">Main Headquarters</div>
+                        <div class="value"><a href="https://maps.google.com/?q=Metro+Complex,Convent+road,Vadakara"
+                                target="_blank" class="text-white text-decoration-none">Metro Complex,Convent road
+                                ,Vadakara</a></div>
+                    </div>
+                </div>
+                <div class="c-item">
+                    <div class="c-icon"><i class="bi bi-telephone-outbound"></i></div>
+                    <div class="c-text">
+                        <div class="label">Consultation Line</div>
+                        <div class="value"><a href="tel:+919446887822" class="text-white text-decoration-none">+91 94468
+                                87822</a></div>
+                    </div>
+                </div>
+                <div class="c-item">
+                    <div class="c-icon"><i class="bi bi-envelope-at"></i></div>
+                    <div class="c-text">
+                        <div class="label">Official Inquiry</div>
+                        <div class="value"><a href="mailto:getconnect.prime@gmail.com"
+                                class="text-white text-decoration-none"
+                                style="word-break: break-all;">getconnect.prime@gmail.com</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="contact-map">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3908.3344605151525!2d75.5864773752119!3d11.599468743407954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba6859d566dd959%3A0x95fedc0fe6228bec!2sOPPO%20Service%20Center!5e0!3m2!1sen!2sin!4v1741588277258!5m2!1sen!2sin"
+                width="100%" height="100%" style="border:0; min-height:600px;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+
+
+
+    <!-- footer -->
+    {% include 'shop/footer.html' %}
+    {% endblock %}

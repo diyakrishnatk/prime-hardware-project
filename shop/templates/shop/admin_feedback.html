@@ -1,0 +1,151 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .feedback-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 2rem;
+    }
+
+    .feedback-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .feedback-row {
+        background: white;
+        transition: var(--transition);
+        border-radius: 16px;
+    }
+
+    .feedback-row:hover {
+        transform: scale(1.01);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .feedback-row td {
+        padding: 1.5rem;
+        vertical-align: middle;
+        border: 1px solid #f1f5f9;
+    }
+
+    .feedback-row td:first-child {
+        border-radius: 16px 0 0 16px;
+        border-right: none;
+    }
+
+    .feedback-row td:last-child {
+        border-radius: 0 16px 16px 0;
+        border-left: none;
+    }
+
+    .star-rating {
+        color: #f59e0b;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .comment-bubble {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 12px;
+        font-style: italic;
+        color: var(--text-main);
+        border-left: 4px solid var(--accent-blue);
+    }
+
+    .prod-preview {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .prod-mini-img {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+</style>
+
+<div class="intelligence-container">
+    <div class="mb-5">
+        <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">Customer Sentiments</h1>
+        <p class="text-muted fw-600 mb-0">Overview of product feedback and ratings</p>
+    </div>
+
+    <div class="feedback-panel">
+        {% if feedbacks %}
+        <div class="table-responsive">
+            <table class="feedback-table">
+                <thead>
+                    <tr class="text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--text-muted);">
+                        <th class="ps-4 pb-3">Product</th>
+                        <th class="pb-3">Customer</th>
+                        <th class="pb-3">Rating</th>
+                        <th class="pb-3">Feedback</th>
+                        <th class="text-end pe-4 pb-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in feedbacks %}
+                    <tr class="feedback-row">
+                        <td class="ps-4">
+                            <div class="prod-preview">
+                                {% if f.product.image %}
+                                <img src="{{ f.product.image.url }}" class="prod-mini-img">
+                                {% else %}
+                                <div class="prod-mini-img d-flex align-items-center justify-content-center text-muted"><i class="bi bi-box"></i></div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-800 text-main">{{ f.product.name }}</div>
+                                    <div class="text-muted small">{{ f.product.category }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-sm bg-blue-soft text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.75rem; background: #eff6ff;">
+                                    {{ f.user.username|slice:":1"|upper }}
+                                </div>
+                                <div class="fw-700 text-main">{{ f.user.username|title }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="star-rating">
+                                <i class="bi bi-star-fill"></i> {{ f.rating }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="comment-bubble">
+                                "{{ f.comment|truncatewords:20 }}"
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="fw-600 text-main">{{ f.created_at|date:"d M, Y" }}</div>
+                            <div class="text-muted small">{{ f.created_at|date:"h:i A" }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-chat-square-dots text-muted opacity-25" style="font-size: 4rem;"></i>
+            <h4 class="fw-800 text-muted mt-3">No Feedback Collected Yet</h4>
+            <p class="text-muted">Customer sentiments will appear here once they start rating products.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

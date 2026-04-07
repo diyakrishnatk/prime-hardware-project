@@ -1,0 +1,756 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --card-radius: 22px;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-orange: #f59e0b;
+        --accent-red: #ef4444;
+        --accent-purple: #8b5cf6;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .intelligence-container {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* KPI GRID */
+    .intel-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 1400px) {
+        .intel-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .intel-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .intel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .intel-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+    }
+
+    .intel-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .intel-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+    }
+
+    .ib-blue {
+        background: #eff6ff;
+        color: var(--accent-blue);
+    }
+
+    .ib-green {
+        background: #ecfdf5;
+        color: var(--accent-green);
+    }
+
+    .ib-orange {
+        background: #fffbeb;
+        color: var(--accent-orange);
+    }
+
+    .ib-red {
+        background: #fef2f2;
+        color: var(--accent-red);
+    }
+
+    .intel-info h6 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    .intel-info h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* SECTION CARDS */
+    .intel-card-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+        padding: 1.75rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .intel-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .intel-section-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* LISTS & TABLES */
+    .status-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1.15rem;
+        border-radius: 12px;
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        margin-bottom: 0.75rem;
+        text-decoration: none;
+        transition: var(--transition);
+        color: var(--text-main) !important;
+    }
+
+    .status-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+        border-color: #d1d5db !important;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.7rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .badge-placed, .box-placed {
+        background: #E8F1FF !important;
+        color: #2563EB !important;
+    }
+
+    .badge-processing, .box-packed {
+        background: #FFF4E5 !important;
+        color: #F59E0B !important;
+    }
+
+    .badge-shipped, .box-shipped {
+        background: #F3E8FF !important;
+        color: #7C3AED !important;
+    }
+
+    .badge-delivered, .box-success {
+        background: #E8F8F0 !important;
+        color: #10B981 !important;
+    }
+
+    .badge-out-delivery {
+        background: #F0F9FF !important;
+        color: #0891B2 !important;
+    }
+
+    .product-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .product-row:last-child {
+        border-bottom: none;
+    }
+
+    .prod-img {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: #f1f5f9;
+        flex-shrink: 0;
+    }
+
+    .prod-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .prod-name {
+        font-weight: 700;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .prod-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .btn-intelligence {
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: white;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-intelligence:hover {
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+    }
+
+    /* CUSTOM TABLE FOR RECENT ORDERS */
+    .intel-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .intel-table th {
+        padding: 1rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #f1f5f9;
+        text-align: left;
+    }
+
+    .intel-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
+
+    .intel-table tbody tr:nth-child(even) {
+        background: rgba(248, 250, 252, 0.4);
+    }
+
+    .intel-table tbody tr:hover {
+        background: rgba(241, 245, 249, 0.8) !important;
+        transition: var(--transition);
+    }
+
+    .order-ref {
+        font-weight: 800;
+        color: var(--accent-blue);
+        background: #eff6ff;
+        padding: 0.3rem 0.6rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+    }
+
+    /* QUICK ACTIONS CARDS */
+    .quick-actions-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+    }
+
+    @media (max-width: 1200px) {
+        .quick-actions-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 600px) {
+        .quick-actions-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .action-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-soft);
+        text-decoration: none;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.06);
+        background: #fff;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .action-icon-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .ai-blue {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .ai-dark {
+        background: #f8fafc;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .ai-neutral {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .action-card h4 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 3px;
+    }
+
+    .action-card p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+</style>
+
+<div class="intelligence-container">
+
+    <div class="mb-5">
+        <div class="mb-4">
+            <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">Store Intelligence</h1>
+            <p class="text-muted fw-600 mb-0">Operational overview and performance metrics</p>
+        </div>
+
+        <div class="quick-actions-row">
+            <a href="{% url 'add_product' %}" class="action-card">
+                <div class="action-icon-circle ai-blue">
+                    <i class="bi bi-plus-lg"></i>
+                </div>
+                <div>
+                    <h4>Add Product</h4>
+                    <p>Add a new product to inventory</p>
+                </div>
+            </a>
+
+            <a href="{% url 'admin_walkin_customers' %}" class="action-card">
+                <div class="action-icon-circle" style="background: #f0fdf4; color: #16a34a;">
+                    <i class="bi bi-shop"></i>
+                </div>
+                <div>
+                    <h4>Walk-in Sale</h4>
+                    <p>Generate bill for offline client</p>
+                </div>
+            </a>
+
+            <a href="{% url 'admin_orders' %}" class="action-card">
+                <div class="action-icon-circle ai-dark">
+                    <i class="bi bi-cart3"></i>
+                </div>
+                <div>
+                    <h4>Manage Orders</h4>
+                    <p>View and process customer orders</p>
+                </div>
+            </a>
+
+            <a href="{% url 'admin_feedback' %}" class="action-card">
+                <div class="action-icon-circle ai-blue" style="background: #fdf2f8; color: #db2777;">
+                    <i class="bi bi-chat-heart"></i>
+                </div>
+                <div>
+                    <h4>Review Sentiments</h4>
+                    <p>Analyze customer product feedback</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="intel-grid">
+        <a href="{% url 'admin_products' %}" class="intel-card">
+            <div class="intel-icon-box ib-blue"><i class="bi bi-box-seam-fill"></i></div>
+            <div class="intel-info">
+                <h6>Catalog Items</h6>
+                <h3>{{ total_products }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_customers' %}" class="intel-card">
+            <div class="intel-icon-box ib-green"><i class="bi bi-people-fill"></i></div>
+            <div class="intel-info">
+                <h6>Customer Base</h6>
+                <h3>{{ total_customers }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_orders' %}" class="intel-card">
+            <div class="intel-icon-box ib-orange"><i class="bi bi-cart-check-fill"></i></div>
+            <div class="intel-info">
+                <h6>Total Orders</h6>
+                <h3>{{ total_orders }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_orders' %}" class="intel-card">
+            <div class="intel-icon-box ib-red"><i class="bi bi-cash-stack"></i></div>
+            <div class="intel-info">
+                <h6>Gross Revenue</h6>
+                <h3>₹{{ total_revenue }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_newsletters' %}" class="intel-card">
+            <div class="intel-icon-box" style="background: #fdf2f8; color: #db2777;"><i class="bi bi-envelope-heart-fill"></i></div>
+            <div class="intel-info">
+                 <div class="d-flex align-items-center gap-2">
+                    <h6>Subscribers</h6>
+                    {% if new_subs_today > 0 %}
+                    <span class="badge bg-success rounded-pill" style="font-size: 0.6rem;">+{{ new_subs_today }} today</span>
+                    {% endif %}
+                </div>
+                <h3>{{ total_subscribers }}</h3>
+            </div>
+        </a>
+    </div>
+
+    <!-- INSIGHTS GRID -->
+    <div class="row g-4 mb-5">
+        <!-- FULFILLMENT -->
+        <div class="col-lg-4">
+            <div class="intel-card-section">
+                <div class="intel-section-header">
+                    <span class="intel-section-title"><i class="bi bi-layers-fill text-primary"></i> Fulfillment</span>
+                    <i class="bi bi-three-dots-vertical text-muted"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <a href="{% url 'admin_orders' %}?status=Placed" class="status-item">
+                        <span class="fw-bold">Placed</span>
+                        <span class="status-badge badge-placed">{{ placed_orders }}</span>
+                    </a>
+                    <a href="{% url 'admin_orders' %}?status=Packed" class="status-item">
+                        <span class="fw-bold">Packed</span>
+                        <span class="status-badge badge-processing">{{ packed_orders }}</span>
+                    </a>
+                    <a href="{% url 'admin_orders' %}?status=Shipped" class="status-item">
+                        <span class="fw-bold">Shipped</span>
+                        <span class="status-badge badge-shipped">{{ shipped_orders }}</span>
+                    </a>
+                    <a href="{% url 'admin_orders' %}?status=Out for Delivery" class="status-item">
+                        <span class="fw-bold">Out for Delivery</span>
+                        <span class="status-badge badge-out-delivery">{{ out_for_delivery_orders }}</span>
+                    </a>
+                    <a href="{% url 'admin_orders' %}?status=Delivered" class="status-item">
+                        <span class="fw-bold">Delivered</span>
+                        <span class="status-badge badge-delivered">{{ delivered_orders }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVENTORY -->
+        <div class="col-lg-4">
+            <div class="intel-card-section">
+                <div class="intel-section-header">
+                    <span class="intel-section-title"><i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        Inventory Alerts</span>
+                    <a href="{% url 'admin_products' %}" class="btn-intelligence">Restock</a>
+                </div>
+                <div class="flex-grow-1 overflow-auto" style="max-height: 350px;">
+                    {% if low_stock_products %}
+                    {% for product in low_stock_products %}
+                    <a href="{% url 'edit_product_stock' product.id %}" class="product-row text-decoration-none">
+                        {% if product.image %}<img src="{{ product.image.url }}" class="prod-img">{% else %}<div
+                            class="prod-img d-flex align-items-center justify-content-center text-muted"><i
+                                class="bi bi-image"></i></div>{% endif %}
+                        <div class="prod-details">
+                            <div class="prod-name">{{ product.name }}</div>
+                            <div class="prod-meta text-danger">Stock Level: {{ product.stock }}</div>
+                        </div>
+                        <div class="text-primary"><i class="bi bi-arrow-right-circle-fill"></i></div>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-check2-circle mb-2 text-success" style="font-size: 3rem;"></i>
+                        <p class="fw-bold text-muted">No low stock alerts</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- OFFERS -->
+        <div class="col-lg-4">
+            <div class="intel-card-section">
+                <div class="intel-section-header">
+                    <span class="intel-section-title"><i class="bi bi-stars text-warning"></i> Active Offers</span>
+                    <a href="{% url 'admin_offers' %}" class="btn-intelligence">Manage</a>
+                </div>
+                <div class="flex-grow-1 overflow-auto" style="max-height: 350px;">
+                    {% if offer_products %}
+                    {% for product in offer_products %}
+                    <a href="{% url 'admin_offers' %}" class="product-row text-decoration-none">
+                        {% if product.image %}<img src="{{ product.image.url }}" class="prod-img">{% else %}<div
+                            class="prod-img d-flex align-items-center justify-content-center text-muted"><i
+                                class="bi bi-tag"></i></div>{% endif %}
+                        <div class="prod-details">
+                            <div class="prod-name">{{ product.name }}</div>
+                            <div class="prod-meta text-success">{{ product.offer_percent }}% Activation</div>
+                        </div>
+                        <div class="text-warning"><i class="bi bi-arrow-right-circle-fill"></i></div>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-lightning-charge mb-2 text-muted" style="font-size: 3rem;"></i>
+                        <p class="fw-bold text-muted">No active promotions</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTELLIGENCE REPORTING -->
+    <style>
+        .btn-search-prime {
+            padding: 0.6rem 2rem;
+            border-radius: 12px;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        .btn-search-prime:hover {
+            background: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+    <div class="intel-card-section mb-4">
+        <div class="intel-section-header">
+            <span class="intel-section-title"><i class="bi bi-file-earmark-pdf-fill text-danger"></i> Intelligence Reporting</span>
+            <div class="dropdown">
+                <button class="btn btn-intelligence dropdown-toggle px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i> Intelligence Reports
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; margin-top: 10px;">
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_sales_report' %}?type=today" target="_blank"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Today's Sales</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_sales_report' %}?type=month" target="_blank"><i class="bi bi-calendar-range text-success me-2"></i>Monthly Analytics</a></li>
+                    <li><a class="dropdown-item fw-bold small p-2 px-3" href="{% url 'admin_sales_report' %}?type=year" target="_blank"><i class="bi bi-trophy text-warning me-2"></i>Annual Growth</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <p class="text-muted small mb-0">Generate itemized PDF reports for specific operational periods. High-fidelity financial summaries with grouping and month-wise totals.</p>
+            </div>
+            <div class="col-md-7">
+                <form action="{% url 'admin_sales_report' %}" method="GET" target="_blank" class="row g-2 align-items-end justify-content-end">
+                    <input type="hidden" name="type" value="range">
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">From</label>
+                        <div class="search-vessel" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0 10px;">
+                            <input type="date" name="start_date" class="form-control border-0 bg-transparent py-2" required>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <label class="small fw-bold text-muted mb-1">To</label>
+                        <div class="search-vessel" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0 10px;">
+                            <input type="date" name="end_date" class="form-control border-0 bg-transparent py-2" required>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn-search-prime">Range PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- RECENT TRANSACTIONS TABLE -->
+    <div class="intel-card-section mb-4">
+        <div class="intel-section-header">
+            <span class="intel-section-title"><i class="bi bi-clock-history text-purple"></i> Recent Activity</span>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-intelligence text-danger border-danger-subtle" 
+                    onclick="if(confirm('Are you sure you want to CLEAR ALL ORDER RECORDS?')) { document.getElementById('clear-orders-dashboard-form').submit(); }">
+                    <i class="bi bi-trash3 me-1"></i> Clear All
+                </button>
+                <form id="clear-orders-dashboard-form" method="POST" action="{% url 'admin_clear_orders' %}" style="display:none;">
+                    {% csrf_token %}
+                </form>
+                <a href="{% url 'admin_orders' %}" class="btn-intelligence">Full History</a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="intel-table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>User</th>
+                        <th>Created At</th>
+                        <th>Status</th>
+                        <th>Valuation</th>
+                        <th class="text-end">Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td><span class="order-ref">#ORD-{{ order.id }}</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                    style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    {% if order.billing_name %}
+                                        {{ order.billing_name|slice:":1"|upper }}
+                                    {% elif order.customer %}
+                                        {{ order.customer.user.username|slice:":1"|upper }}
+                                    {% else %}
+                                        ?
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="fw-bold">
+                                        {% if order.billing_name %}
+                                            {{ order.billing_name|title }}
+                                        {% elif order.customer %}
+                                            {{ order.customer.user.username|title }}
+                                        {% else %}
+                                            Walk-in Client
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        {% if order.billing_email %}
+                                            {{ order.billing_email }}
+                                        {% elif order.customer %}
+                                            {{ order.customer.user.email }}
+                                        {% else %}
+                                            Offline Purchase
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-600">{{ order.created_at|date:"d M, Y" }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">at {{ order.created_at|date:"h:i A" }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if order.order_status == 'Delivered' %}
+                            <span class="status-badge box-success">Delivered</span>
+                            {% elif order.order_status == 'Out for Delivery' %}
+                            <span class="status-badge box-shipped">Out for Delivery</span>
+                            {% elif order.order_status == 'Placed' %}
+                            <span class="status-badge box-placed">Placed</span>
+                            {% elif order.order_status == 'Packed' %}
+                            <span class="status-badge box-packed">Packed</span>
+                            {% elif order.order_status == 'Cancelled' %}
+                            <span class="status-badge" style="background: #fee2e2; color: #ef4444;">Cancelled</span>
+                            {% else %}
+                            <span class="status-badge ib-neutral">{{ order.order_status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold text-main">₹{{ order.total_amount }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'track_order' order.id %}" class="btn-intelligence">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No recent activity detected</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

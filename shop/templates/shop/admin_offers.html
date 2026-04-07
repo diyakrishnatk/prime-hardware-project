@@ -1,0 +1,382 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --card-radius: 22px;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-orange: #f59e0b;
+        --accent-red: #ef4444;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .intelligence-container {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* KPI METRICS */
+    .intel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .intel-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .intel-icon-box {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+    }
+
+    .ib-blue {
+        background: #eff6ff;
+        color: var(--accent-blue);
+    }
+
+    .ib-red {
+        background: #fef2f2;
+        color: var(--accent-red);
+    }
+
+    .ib-orange {
+        background: #fffbeb;
+        color: var(--accent-orange);
+    }
+
+    .intel-info h6 {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+        letter-spacing: 0.5px;
+    }
+
+    .intel-info h3 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* OFFER MANIFEST */
+    .offer-manifest {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .offer-item {
+        background: var(--glass-bg);
+        backdrop-filter: blur(8px);
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 2.5fr 1.5fr 2fr 1.5fr 0.5fr;
+        align-items: center;
+        gap: 2rem;
+        transition: var(--transition);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .offer-item:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .prod-identity {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .prod-viz {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #f1f5f9;
+        flex-shrink: 0;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .prod-viz img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .name-stack div {
+        font-weight: 800;
+        color: var(--text-main);
+        font-size: 1rem;
+    }
+
+    .name-stack span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    /* PRICING */
+    .valuation .old {
+        font-size: 0.85rem;
+        text-decoration: line-through;
+        color: var(--text-muted);
+    }
+
+    .valuation .new {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--accent-red);
+    }
+
+    .valuation .std {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    /* CONTROL PANEL */
+    .control-deck {
+        background: rgba(255, 255, 255, 0.6);
+        padding: 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        gap: 8px;
+    }
+
+    .control-select {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--text-main);
+        padding: 0 8px;
+        outline: none;
+    }
+
+    .btn-sync {
+        background: var(--text-main);
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        transition: var(--transition);
+    }
+
+    .btn-sync:hover {
+        background: var(--accent-blue);
+    }
+
+    /* STATUS RADAR */
+    .status-radar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+    }
+
+    .pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .pulse-live {
+        background: var(--accent-green);
+        box-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .pulse-parked {
+        background: var(--text-muted);
+    }
+
+    .btn-status-toggle {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: white;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-status-toggle:hover {
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+    }
+
+    @media (max-width: 1100px) {
+        .offer-item {
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .control-deck {
+            grid-column: span 2;
+        }
+    }
+</style>
+
+<div class="intelligence-container">
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">Promotional Intelligence</h1>
+            <p class="text-muted fw-600 mb-0">Configure dynamic pricing and market overrides</p>
+        </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-white text-dark shadow-sm border px-3 py-2 rounded-pill fw-bold">
+                <i class="bi bi-graph-up-arrow text-primary me-2"></i> Strategy: Dynamic
+            </span>
+        </div>
+    </div>
+
+    <!-- METRICS GRID -->
+    <div class="intel-grid">
+        <a href="{% url 'admin_products' %}" class="intel-card">
+            <div class="intel-icon-box ib-blue"><i class="bi bi-collection-fill"></i></div>
+            <div class="intel-info">
+                <h6>Catalog Size</h6>
+                <h3>{{ products|length }}</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_products' %}?offers=active" class="intel-card">
+            <div class="intel-icon-box ib-red"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div class="intel-info">
+                <h6>Live Discounts</h6>
+                <h3 id="active-count">0</h3>
+            </div>
+        </a>
+        <a href="{% url 'admin_offers' %}" class="intel-card">
+            <div class="intel-icon-box ib-orange"><i class="bi bi-tags-fill"></i></div>
+            <div class="intel-info">
+                <h6>Promo Utilization</h6>
+                <h3>High</h3>
+            </div>
+        </a>
+    </div>
+
+    <!-- OFFER MANIFEST -->
+    <div class="offer-manifest">
+        {% for product in products %}
+        <div class="offer-item">
+            <!-- Identity -->
+            <div class="prod-identity">
+                <div class="prod-viz">
+                    {% if product.image %}<img src="{{ product.image.url }}">{% else %}<div
+                        class="w-100 h-100 d-flex align-items-center justify-content-center text-muted"><i
+                            class="bi bi-image"></i></div>{% endif %}
+                </div>
+                <div class="name-stack">
+                    <div>{{ product.name|title }}</div>
+                    <span>CAT: {{ product.category }}</span>
+                </div>
+            </div>
+
+            <!-- Valuation -->
+            <div class="valuation">
+                {% if product.is_offer %}
+                <div class="old">₹{{ product.price }}</div>
+                <div class="new">₹{{ product.get_offer_price }}</div>
+                {% else %}
+                <div class="std">₹{{ product.price }}</div>
+                <span class="text-muted" style="font-size: 0.65rem; font-weight: 800;">STANDARD RATE</span>
+                {% endif %}
+            </div>
+
+            <!-- Control Deck -->
+            <form method="POST" action="{% url 'toggle_offer' product.id %}" class="control-deck">
+                {% csrf_token %}
+                <select name="offer_percent" class="control-select">
+                    <option value="0" {% if product.offer_percent == 0 %}selected{% endif %}>No Offer (0%)</option>
+                    <option value="10" {% if product.offer_percent == 10 %}selected{% endif %}>10% Off</option>
+                    <option value="20" {% if product.offer_percent == 20 %}selected{% endif %}>20% Off</option>
+                    <option value="30" {% if product.offer_percent == 30 %}selected{% endif %}>30% Seasonal</option>
+                    <option value="50" {% if product.offer_percent == 50 %}selected{% endif %}>50% Half-Price</option>
+                </select>
+                <button type="submit" class="btn-sync">Sync</button>
+            </form>
+
+            <!-- Status Radar -->
+            <div class="status-radar justify-content-center">
+                {% if product.is_offer %}
+                <div class="pulse pulse-live"></div>
+                <span style="color:var(--accent-green)">LIVE</span>
+                {% else %}
+                <div class="pulse pulse-parked"></div>
+                <span style="color:var(--text-muted)">PARKED</span>
+                {% endif %}
+            </div>
+
+            <!-- Quick Action -->
+            <div class="text-end">
+                <a href="{% url 'toggle_offer' product.id %}" class="btn-status-toggle">
+                    {% if product.is_offer %}<i class="bi bi-power text-danger"></i>{% else %}<i
+                        class="bi bi-play-fill text-success" style="font-size: 1.2rem;"></i>{% endif %}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const liveElements = document.querySelectorAll('.pulse-live');
+        document.getElementById('active-count').textContent = liveElements.length;
+    });
+</script>
+{% endblock %}

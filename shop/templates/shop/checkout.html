@@ -1,0 +1,284 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block header_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+{% block content %}
+<style>
+    .checkout-container {
+        padding: 2rem 0;
+    }
+
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    /* Map Styles */
+    #map-preview {
+        height: 350px;
+        width: 100%;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        border: 2px solid #f1f5f9;
+        display: none;
+    }
+
+    .map-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .btn-map-action {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-map-action:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .btn-map-action.active {
+        background: #0f172a;
+        color: white;
+        border-color: #0f172a;
+    }
+
+    .btn-dark {
+        background: #1a1a1a;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        padding: 10px;
+    }
+</style>
+<div class="row checkout-container">
+    <div class="col-lg-7">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="checkout-card">
+                <h5>Step 1: Shipping Details</h5>
+                <hr>
+                {% if verified %}
+                <div class="alert alert-success d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill me-2"></i> Verified
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input {% if verified %}readonly{% endif %} type="text" name="billing_name" class="form-control"
+                        value="{{billing_name}}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input {% if verified %}readonly{% endif %} type="email" name="billing_email" class="form-control"
+                        value="{{billing_email}}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contact Phone</label>
+                    <input {% if verified %}readonly{% endif %} type="text" name="phone" class="form-control"
+                        value="{{phone}}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label d-flex justify-content-between">
+                        Delivery Details
+                        <span class="badge bg-light text-primary border" style="cursor: pointer;" id="toggleMap">
+                            <i class="bi bi-map-fill"></i> Use Interactive Map
+                        </span>
+                    </label>
+                    <div id="map-preview"></div>
+                    <div class="map-controls">
+                        <button type="button" class="btn-map-action" id="btnLocate">
+                            <i class="bi bi-crosshair"></i> Use My Current Location
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Delivery Location (Town/City)</label>
+                    <input {% if verified %}readonly{% endif %} type="text" id="id_location" name="location" class="form-control"
+                        value="{{location}}" placeholder="e.g. Vadakara, Calicut" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Delivery Address</label>
+                    <textarea {% if verified %}readonly{% endif %} id="id_address" name="address" class="form-control" rows="3"
+                        required>{{address}}</textarea>
+                </div>
+                {% if not verified %}
+                <button type="submit" name="send_otp" class="btn btn-dark w-100">Verify & Continue</button>
+                {% endif %}
+            </div>
+
+            {% if verified %}
+            <div class="checkout-card">
+                <h5>Step 2: Payment Method</h5>
+                <hr>
+                <div class="form-check mb-2">
+                    <input {% if not paid %}checked{% endif %} class="form-check-input" type="radio" name="payment"
+                        value="COD" id="cod-radio">
+                    <label class="form-check-label" for="cod-radio">Cash on Delivery</label>
+                </div>
+                <div class="form-check mb-4">
+                    <input {% if paid %}checked{% endif %} class="form-check-input" type="radio" name="payment"
+                        value="Online" id="online-radio">
+                    <label class="form-check-label" for="online-radio">Online Payment (Secure)</label>
+                </div>
+
+                {% if not paid %}
+                <div id="cod-btn-area">
+                    <button type="submit" name="place_order" class="btn btn-primary w-100">Place Order (COD)</button>
+                </div>
+                <div id="online-btn-area" style="display: none;">
+                    <button type="submit" name="place_order" class="btn btn-primary w-100">Proceed to Payment</button>
+                </div>
+                {% endif %}
+
+                {% if paid %}
+                <button type="submit" name="place_order" class="btn btn-success w-100">Confirm Order</button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="checkout-card">
+            <h5>Order Summary</h5>
+            <hr>
+            {% for key,item in cart.items %}
+            <div class="d-flex justify-content-between mb-2">
+                <span>{{ item.name }} (x{{ item.quantity }})</span>
+                <span class="fw-bold">₹ {{ item.price }}</span>
+            </div>
+            {% endfor %}
+            <hr>
+            <div class="d-flex justify-content-between h5">
+                <span>Total Amount</span>
+                <span class="text-primary fw-bold">₹ {{ total }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cod = document.getElementById('cod-radio');
+        const online = document.getElementById('online-radio');
+        const codArea = document.getElementById('cod-btn-area');
+        const onlineArea = document.getElementById('online-btn-area');
+        if (cod && online) {
+            cod.addEventListener('change', () => { codArea.style.display = 'block'; onlineArea.style.display = 'none'; });
+            online.addEventListener('change', () => { codArea.style.display = 'none'; onlineArea.style.display = 'block'; });
+        }
+
+        // --- MAP LOGIC ---
+        let map = null;
+        let marker = null;
+        const mapArea = document.getElementById('map-preview');
+        const toggleMapBtn = document.getElementById('toggleMap');
+        const locInput = document.getElementById('id_location');
+        const addrInput = document.getElementById('id_address');
+
+        toggleMapBtn.addEventListener('click', () => {
+            if (mapArea.style.display === 'none' || mapArea.style.display === '') {
+                mapArea.style.display = 'block';
+                initMap();
+                toggleMapBtn.innerHTML = '<i class="bi bi-x-circle-fill"></i> Hide Map';
+            } else {
+                mapArea.style.display = 'none';
+                toggleMapBtn.innerHTML = '<i class="bi bi-map-fill"></i> Use Interactive Map';
+            }
+        });
+
+        function initMap() {
+            if (map) return;
+            // Default center (Kerala/India area)
+            map = L.map('map-preview').setView([11.6041, 75.5908], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            map.on('click', function(e) {
+                updateMarker(e.latlng);
+                reverseGeocode(e.latlng);
+            });
+        }
+
+        function updateMarker(latlng) {
+            if (marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, { draggable: true }).addTo(map);
+                marker.on('dragend', function() {
+                    reverseGeocode(marker.getLatLng());
+                });
+            }
+            map.panTo(latlng);
+        }
+
+        async function reverseGeocode(latlng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`);
+                const data = await response.json();
+                if (data.address) {
+                    let town = data.address.suburb || data.address.town || data.address.city || data.address.village || '';
+                    let fullAddr = data.display_name;
+
+                    // ✅ PINCODE CORRECTION: If Vadakara is detected, ensure the correct Pin (673101) is used.
+                    // The API sometimes mistakenly assigns 670109 (Kannur) to Vadakara (Kozhikode).
+                    if (fullAddr.includes("Vadakara") || town.toLowerCase().includes("vadakara")) {
+                        fullAddr = fullAddr.replace("670109", "673101");
+                    }
+                    
+                    locInput.value = town;
+                    addrInput.value = fullAddr;
+                }
+            } catch (err) {
+                console.error("Geocoding error:", err);
+            }
+        }
+
+        document.getElementById('btnLocate').addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+            
+            mapArea.style.display = 'block';
+            initMap();
+            
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                updateMarker(latlng);
+                reverseGeocode(latlng);
+                map.setView(latlng, 16);
+            }, (err) => {
+                alert("Could not detect location. Please pick manually on the map.");
+            });
+        });
+    });
+</script>
+{% endblock %}

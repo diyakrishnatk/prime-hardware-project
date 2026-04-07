@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ bill.id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        @frame footer {
+            -pdf-frame-content: footerContent;
+            bottom: 1cm;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+            height: 1cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 9.5pt;
+        }
+        .header-section {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .brand-header {
+            border: 2pt solid #3b82f6;
+            background-color: #f8fbff;
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        .brand-name {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 3pt;
+        }
+        .invoice-title {
+            font-size: 10pt;
+            color: #64748b;
+            margin-top: 5px;
+            letter-spacing: 1pt;
+        }
+        .company-info {
+            width: 100%;
+        }
+        .company-name {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .company-details {
+            font-size: 8.5pt;
+            color: #475569;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .meta-cell {
+            padding: 2px 0;
+            font-size: 9pt;
+        }
+        .meta-label { color: #64748b; font-weight: bold; }
+        
+        .billing-section {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .section-box {
+            border: 0.5pt solid #e2e8f0;
+            padding: 12px;
+            min-height: 100px;
+        }
+        .section-header {
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3b82f6;
+            border-bottom: 0.5pt solid #f1f5f9;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 8.5pt;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 12px 10px;
+            border-bottom: 0.5pt solid #f1f5f9;
+            font-size: 9pt;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .footer-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .total-row {
+            background-color: #f8fafc;
+            border-top: 1pt solid #0f172a;
+        }
+        .total-amount {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .terms-conditions {
+            margin-top: 40px;
+            font-size: 7.5pt;
+            color: #64748b;
+            width: 60%;
+        }
+        .signature-area {
+            margin-top: 40px;
+            text-align: right;
+            width: 40%;
+        }
+        .signature-line {
+            border-top: 0.5pt solid #0f172a;
+            width: 150px;
+            margin-left: auto;
+            margin-top: 40px;
+        }
+        .grand-total-row {
+            background-color: #1a2a6c;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        .status-paid { color: #059669; font-weight: bold; }
+        .status-unpaid { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="brand-header">
+        <div class="brand-name">PRIME</div>
+        <div class="invoice-title">OFFICIAL TAX INVOICE</div>
+    </div>
+
+    <table class="header-section">
+        <tr>
+            <td width="55%" style="vertical-align: top;">
+                <div class="company-name">PRIME HARDWARE</div>
+                <div class="company-details">
+                    Metro Complex, Convent road, Vadakara<br>
+                    Phone: +91 94468 87822 | Email: getconnect.prime@gmail.com<br>
+                    GSTIN: 32ABCPQ1234Z5Z6 (Sample)
+                </div>
+            </td>
+            <td width="45%" style="vertical-align: top;">
+                <table class="meta-table" style="margin-left: auto;">
+                    <tr>
+                        <td class="meta-cell meta-label" width="40%">Invoice No:</td>
+                        <td class="meta-cell" width="60%">#INV-{{ bill.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-cell meta-label">Order Date:</td>
+                        <td class="meta-cell">{{ bill.created_at|date:"d M Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-cell meta-label">Payment status:</td>
+                        <td class="meta-cell {% if bill.payment_status == 'Paid' %}status-paid{% else %}status-unpaid{% endif %}">
+                            {{ bill.payment_status|upper }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table class="billing-section">
+        <tr>
+            <td width="48%" style="vertical-align: top; padding-right: 15px;">
+                <div class="section-box">
+                    <div class="section-header">Billed To</div>
+                    <div style="font-weight: bold; font-size: 11pt; margin-bottom: 4px;">{{ bill.billing_name }}</div>
+                    <div style="font-size: 8.5pt; color: #475569;">
+                        {{ bill.billing_address|linebreaksbr }}<br>
+                        <b>Phone:</b> {{ bill.billing_phone }}<br>
+                        <b>Email:</b> {{ bill.billing_email }}
+                    </div>
+                </div>
+            </td>
+            <td width="48%" style="vertical-align: top;">
+                <div class="section-box">
+                    <div class="section-header">Shipment & Payment</div>
+                    <div style="font-size: 9pt; color: #475569;">
+                        <b>Delivery Mode:</b> Standard Home Delivery<br>
+                        <b>Payment Method:</b> {{ bill.payment_method }}<br>
+                        <b>Invoice Ref:</b> #PRIME-BLL-{{ bill.id|stringformat:"05d" }}<br>
+                        <b>Location:</b> {{ bill.billing_location|default:"Vadakara" }}
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th width="50%">Description of Goods</th>
+                <th width="10%" class="text-center">Qty</th>
+                <th width="20%" class="text-right">Rate (INR)</th>
+                <th width="20%" class="text-right">Amount (INR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <div style="font-weight: bold;">{{ item.product.name }}</div>
+                    <div style="font-size: 7.5pt; color: #64748b;">Category: {{ item.product.category }}</div>
+                </td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.price|floatformat:2 }}</td>
+                <td class="text-right" style="font-weight: bold;">{{ item.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="2" style="border: none; background: white;"></td>
+                <td class="text-right" style="padding: 15px 10px; font-weight: bold;">Grand Total:</td>
+                <td class="text-right" style="padding: 15px 10px;">
+                    <span class="total-amount">Rs. {{ bill.total_amount|floatformat:2 }}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table width="100%" style="margin-top: 30px;">
+        <tr>
+            <td width="60%" style="vertical-align: top;">
+                <div style="font-weight: bold; font-size: 8pt; margin-bottom: 5px;">Terms & Conditions:</div>
+                <div style="font-size: 7pt; color: #64748b;">
+                    1. Goods once sold will not be taken back or exchanged.<br>
+                    2. Any discrepancies should be reported within 24 hours.<br>
+                    3. This is a computer-generated invoice and doesn't require a physical signature.
+                </div>
+            </td>
+            <td width="40%" style="vertical-align: top; text-align: right;">
+                <div style="font-weight: bold; font-size: 9pt;">For PRIME HARDWARE</div>
+                <div class="signature-line"></div>
+                <div style="font-size: 8pt; margin-top: 5px;">Authorized Signatory</div>
+            </td>
+        </tr>
+    </table>
+
+    <div id="footerContent" style="text-align: center; font-size: 8pt; color: #94a3b8; border-top: 0.5pt solid #e2e8f0; padding-top: 5px;">
+        Page <pdf:pagenumber> of <pdf:pagecount> | Thank you for your business! | PRIME HARDWARE Vadakara
+    </div>
+</body>
+</html>

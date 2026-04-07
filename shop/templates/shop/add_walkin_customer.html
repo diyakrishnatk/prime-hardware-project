@@ -1,0 +1,90 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .form-panel {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 3rem;
+        box-shadow: var(--shadow-soft);
+        max-width: 700px;
+        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--text-main);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.75rem;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 0.9rem;
+        border: 2px solid #f1f5f9;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-submit {
+        background: var(--accent);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 14px;
+        font-weight: 800;
+        border: none;
+        width: 100%;
+        margin-top: 2rem;
+        transition: all 0.4s;
+    }
+
+    .btn-submit:hover {
+        background: var(--accent-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+</style>
+
+<div class="intelligence-container">
+    <div class="text-center mb-5">
+        <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">Walk-in Registration</h1>
+        <p class="text-muted fw-600">Onboard offline clients for immediate product billing</p>
+    </div>
+
+    <div class="form-panel">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-4">
+                <div class="col-12">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email (Optional)</label>
+                    <input type="email" name="email" class="form-control" placeholder="client@example.com">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Full Address</label>
+                    <textarea name="address" class="form-control" rows="3" placeholder="Shop/Flat No, Area, City..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-person-check-fill me-2"></i> Confirm Registration
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

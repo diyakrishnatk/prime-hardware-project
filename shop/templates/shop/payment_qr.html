@@ -1,0 +1,154 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .qr-payment-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+    }
+
+    .qr-card {
+        background: white;
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .qr-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: var(--primary);
+    }
+
+    .qr-title {
+        font-weight: 900;
+        font-size: 1.75rem;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .qr-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 2.5rem;
+    }
+
+    .qr-image-wrapper {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 2rem;
+        border: 2px dashed #cbd5e1;
+    }
+
+    .qr-image {
+        width: 250px;
+        height: 250px;
+        object-fit: contain;
+    }
+
+    .payment-amount {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--primary);
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+    }
+
+    .merchant-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+    }
+
+    .instructions {
+        background: #eff6ff;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    .instructions p {
+        margin: 0;
+        color: #1e3a8a;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .instructions p:not(:last-child) {
+        margin-bottom: 0.75rem;
+    }
+
+    .btn-finish {
+        padding: 1rem 2.5rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border-radius: 16px;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .btn-finish:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
+    }
+</style>
+
+<div class="qr-payment-container animate-up">
+    <div class="qr-card">
+        <h2 class="qr-title">Secure UPI Payment</h2>
+        <p class="qr-subtitle">Scan the QR code with any UPI app to pay</p>
+
+        <div class="payment-amount">₹{{ total|floatformat:2 }}</div>
+        <div class="merchant-name">{{ merchant_name }}</div>
+
+        <div class="qr-image-wrapper">
+            <!-- Generate a real UPI QR using QRServer -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=8086158502@ybl%26pn=Prime%20Hardware%26am={{ total }}%26cu=INR"
+                alt="UPI QR Code" class="qr-image">
+        </div>
+
+        <div class="instructions">
+            <p><i class="bi bi-phone fs-5"></i> 1. Open Google Pay, PhonePe, or Paytm</p>
+            <p><i class="bi bi-qr-code-scan fs-5"></i> 2. Scan this QR code</p>
+            <p><i class="bi bi-shield-check fs-5"></i> 3. Confirm payment of ₹{{ total }}</p>
+        </div>
+
+        <form action="{% url 'payment_done' bill.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-finish">
+                I have completed the payment <i class="bi bi-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

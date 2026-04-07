@@ -1,0 +1,297 @@
+{% extends 'shop/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .pos-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+    }
+
+    .pos-main-card {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .pos-summary-card {
+        background: #f8fafc;
+        border-radius: var(--card-radius);
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+    }
+
+    .item-row {
+        background: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+        display: grid;
+        grid-template-columns: 1fr 120px 150px 50px;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .item-row:hover {
+        border-color: var(--accent);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .form-select, .form-control {
+        border-radius: 12px;
+        border: 2px solid #f1f5f9;
+        padding: 0.75rem;
+        font-weight: 600;
+    }
+
+    .btn-add-row {
+        background: #f1f5f9;
+        color: var(--text-main);
+        border: none;
+        padding: 1rem;
+        border-radius: 12px;
+        width: 100%;
+        font-weight: 800;
+        margin-top: 1rem;
+        transition: all 0.3s;
+    }
+
+    .btn-add-row:hover {
+        background: #e2e8f0;
+        color: var(--accent);
+    }
+
+    .summary-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .summary-total {
+        border-top: 2px dashed #cbd5e1;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--text-main);
+    }
+
+    .btn-generate {
+        background: var(--accent);
+        color: white;
+        padding: 1.25rem;
+        border-radius: 16px;
+        font-weight: 800;
+        border: none;
+        width: 100%;
+        margin-top: 2rem;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    @media (max-width: 1024px) {
+        .pos-container { grid-template-columns: 1fr; }
+        .pos-summary-card { position: relative; top: 0; }
+    }
+</style>
+
+<div class="intelligence-container">
+    <div class="mb-5">
+        <h1 class="fw-black mb-1" style="letter-spacing: -1.5px; font-size: 2.5rem;">POS Billing Suite</h1>
+        <p class="text-muted fw-600 mb-0">Generating offline invoice for <span class="text-primary">{{ customer.name }}</span></p>
+    </div>
+
+    <form method="POST" id="posForm">
+        {% csrf_token %}
+        <div class="pos-container">
+            <div class="pos-main-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-900 mb-0 text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">Selected Inventory</h5>
+                    <span class="text-muted small">Multi-item drafting enabled</span>
+                </div>
+
+                <div id="item-list">
+                    <!-- Default Row -->
+                    <div class="item-row">
+                        <div>
+                            <select name="product_ids[]" class="form-select product-selector" onchange="updateRowTotal(this)" required>
+                                <option value="" disabled selected>Select Product</option>
+                                {% for p in products %}
+                                <option value="{{ p.id }}" data-price="{{ p.get_offer_price }}" data-stock="{{ p.stock }}">{{ p.name }} (₹{{ p.get_offer_price }}) - STOCK: {{ p.stock }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <input type="number" name="quantities[]" class="form-control qty-input" value="1" min="1" oninput="updateRowTotal(this)" required>
+                        </div>
+                        <div class="text-end pe-3 fw-800 text-main row-total">
+                            ₹0.00
+                        </div>
+                        <div class="text-danger cursor-pointer" onclick="removeRow(this)">
+                            <i class="bi bi-trash-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-add-row" onclick="addRow()">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Add Another Product
+                </button>
+            </div>
+
+            <div class="pos-summary-card">
+                <h6 class="summary-title">Order Valuation</h6>
+                
+                <div class="summary-line">
+                    <span>Customer</span>
+                    <span class="text-main">{{ customer.name }}</span>
+                </div>
+                <div class="summary-line">
+                    <span>Contact</span>
+                    <span class="text-main">{{ customer.phone }}</span>
+                </div>
+
+                <div class="mt-4 mb-3">
+                    <label class="form-label text-uppercase fw-800 small mb-3" style="letter-spacing: 1px;">Settlement Gateway</label>
+                    <div class="payment-selector-grid">
+                        <input type="radio" name="payment_method" id="pay_gpay" value="GPay" class="d-none" checked>
+                        <label for="pay_gpay" class="payment-tile-select">
+                            <i class="bi bi-qr-code-scan"></i>
+                            <span>G Pay QR</span>
+                        </label>
+
+                        <input type="radio" name="payment_method" id="pay_cash" value="Cash" class="d-none">
+                        <label for="pay_cash" class="payment-tile-select">
+                            <i class="bi bi-cash-stack"></i>
+                            <span>Instant Cash</span>
+                        </label>
+                    </div>
+                </div>
+
+                <style>
+                    .payment-selector-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                    }
+                    .payment-tile-select {
+                        background: white;
+                        border: 2px solid #f1f5f9;
+                        border-radius: 16px;
+                        padding: 1.25rem 0.5rem;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .payment-tile-select i {
+                        font-size: 1.5rem;
+                        color: #94a3b8;
+                    }
+                    .payment-tile-select span {
+                        font-weight: 800;
+                        font-size: 0.75rem;
+                        color: #64748b;
+                        text-transform: uppercase;
+                    }
+                    input[type="radio"]:checked + .payment-tile-select {
+                        border-color: var(--accent);
+                        background: #f0f7ff;
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+                    }
+                    input[type="radio"]:checked + .payment-tile-select i {
+                        color: var(--accent);
+                    }
+                    input[type="radio"]:checked + .payment-tile-select span {
+                        color: var(--text-main);
+                    }
+                </style>
+
+                <div class="summary-total">
+                    <span>Grant Total</span>
+                    <span id="grand-total">₹0.00</span>
+                </div>
+
+                <button type="submit" class="btn-generate">
+                    <i class="bi bi-file-earmark-check-fill me-2"></i> Finalize & Print Bill
+                </button>
+                <div class="text-center mt-3">
+                    <span class="text-muted small fw-600">Stock will be automatically adjusted</span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function addRow() {
+        const firstRow = document.querySelector('.item-row');
+        const newRow = firstRow.cloneNode(true);
+        newRow.querySelector('.product-selector').value = "";
+        newRow.querySelector('.qty-input').value = 1;
+        newRow.querySelector('.row-total').innerText = "₹0.00";
+        document.getElementById('item-list').appendChild(newRow);
+    }
+
+    function removeRow(btn) {
+        if (document.querySelectorAll('.item-row').length > 1) {
+            btn.closest('.item-row').remove();
+            calculateGrandTotal();
+        } else {
+            alert("At least one product is required for billing.");
+        }
+    }
+
+    function updateRowTotal(el) {
+        const row = el.closest('.item-row');
+        const selector = row.querySelector('.product-selector');
+        const qty = row.querySelector('.qty-input').value;
+        const selectedOption = selector.options[selector.selectedIndex];
+        
+        if (selectedOption && !selectedOption.disabled) {
+            const price = parseFloat(selectedOption.getAttribute('data-price'));
+            const stock = parseInt(selectedOption.getAttribute('data-stock'));
+            
+            if (qty > stock) {
+                alert(`Only ${stock} items available in stock!`);
+                row.querySelector('.qty-input').value = stock;
+            }
+            
+            const total = price * (qty || 0);
+            row.querySelector('.row-total').innerText = '₹' + total.toFixed(2);
+        }
+        calculateGrandTotal();
+    }
+
+    function calculateGrandTotal() {
+        let grandTotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const rowTotalText = row.querySelector('.row-total').innerText;
+            const rowTotal = parseFloat(rowTotalText.replace('₹', '')) || 0;
+            grandTotal += rowTotal;
+        });
+        document.getElementById('grand-total').innerText = '₹' + grandTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+</script>
+{% endblock %}

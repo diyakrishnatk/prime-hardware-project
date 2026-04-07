@@ -1,0 +1,409 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ===== PREMIUM GLASSMESH V2 ===== */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --mesh-gradient: radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.1) 0, transparent 50%),
+                         radial-gradient(at 50% 0%, hsla(225, 67%, 59%, 0.1) 0, transparent 50%),
+                         radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.05) 0, transparent 50%);
+    }
+
+    .profile-master-container {
+        position: relative;
+        padding: 2rem 0;
+        z-index: 1;
+    }
+
+    .profile-master-container::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--mesh-gradient);
+        z-index: -1;
+    }
+
+    /* Glass Card Base */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 32px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+        transition: var(--transition);
+        overflow: hidden;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    /* Profile Header Section */
+    .profile-hero {
+        padding: 3.5rem 2.5rem;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.4));
+        position: relative;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 2rem;
+    }
+
+    .profile-avatar-v2 {
+        width: 100%;
+        height: 100%;
+        border-radius: 40px;
+        background: linear-gradient(135deg, var(--primary), #6366f1);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        font-weight: 900;
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+        transform: rotate(-3deg);
+        transition: var(--transition);
+    }
+
+    .avatar-wrapper:hover .profile-avatar-v2 {
+        transform: rotate(0deg) scale(1.05);
+    }
+
+    .status-badge {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Stats Grid */
+    .stat-pill {
+        padding: 1.5rem;
+        border-radius: 24px;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid rgba(255,255,255,0.8);
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+        margin-bottom: 1rem;
+    }
+
+    .stat-pill:hover {
+        background: white;
+        transform: scale(1.02);
+    }
+
+    .stat-icon-v2 {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    }
+
+    /* Action Grid */
+    .action-card {
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        text-decoration: none;
+        color: var(--dark);
+        height: 100%;
+        min-height: 200px;
+    }
+
+    .action-card i {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), #6366f1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: var(--transition);
+    }
+
+    .action-card:hover i {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-data {
+        font-weight: 700;
+        color: var(--dark);
+    }
+
+    /* Tabular Layout */
+    .profile-nav-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        background: rgba(255,255,255,0.5);
+        padding: 0.5rem;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .p-nav-link {
+        padding: 0.8rem 1.8rem;
+        border-radius: 15px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .p-nav-link.active {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    /* Progress bar */
+    .completion-bar {
+        height: 6px;
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+        margin-top: 1.5rem;
+        overflow: hidden;
+    }
+
+    .completion-fill {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary), #6366f1);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+</style>
+
+<div class="profile-master-container">
+    <div class="row g-4">
+        <!-- Sidebar Profile -->
+        <div class="col-lg-4">
+            <div class="glass-card profile-hero mb-4">
+                <div class="avatar-wrapper">
+                    <div class="profile-avatar-v2">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="status-badge">
+                        {% if request.user.is_active %}
+                        <div class="rounded-circle bg-success" style="width: 10px; height: 10px;"></div> Verified
+                        {% else %}
+                        <div class="rounded-circle bg-warning" style="width: 10px; height: 10px;"></div> Pending
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <h2 class="fw-900 mb-1">{{ request.user.username|title }}</h2>
+                <p class="text-muted fw-600 mb-4">{{ request.user.email }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <a href="{% url 'edit_profile' %}" class="btn-intel-primary px-4 py-2" style="font-size: 0.7rem;">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                    </a>
+                </div>
+
+                <div class="px-3">
+                    <div class="completion-bar">
+                        <div class="completion-fill" style="width: {{ completion }}%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span class="small fw-800 text-muted" style="font-size: 0.65rem;">PROFILE COMPLETION</span>
+                        <span class="small fw-900 text-primary" style="font-size: 0.65rem;">{{ completion }}%</span>
+                    </div>
+                </div>
+
+                <hr class="my-4 opacity-5">
+
+                <div class="text-start">
+                    <div class="stat-pill">
+                        <div class="stat-icon-v2">
+                            <i class="bi bi-bag-heart-fill text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="small fw-800 text-muted text-uppercase">Total Orders</div>
+                            <div class="h5 fw-900 mb-0">{{ order_count }}</div>
+                        </div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-icon-v2">
+                            <i class="bi bi-shield-lock-fill text-info"></i>
+                        </div>
+                        <div>
+                            <div class="small fw-800 text-muted text-uppercase">Member Status</div>
+                            <div class="h5 fw-900 mb-0">
+                                {% if order_count >= 10 %}
+                                    Elite Member
+                                {% elif order_count >= 1 %}
+                                    Pro Member
+                                {% else %}
+                                    New Member
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card p-4">
+                <h6 class="fw-900 mb-4 px-2">RECENT ACTIVITY</h6>
+                <div class="d-flex align-items-center gap-3 mb-4 px-2">
+                    <div class="p-3 rounded-circle bg-light">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div>
+                        <div class="fw-800">Last Login</div>
+                        <div class="small text-muted">{{ request.user.last_login|date:"M d, Y @ H:i" }}</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 px-2">
+                    <div class="p-3 rounded-circle bg-light">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="fw-800">Joined On</div>
+                        <div class="small text-muted">{{ request.user.date_joined|date:"F Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="col-lg-8">
+            <!-- Navigation -->
+            <div class="profile-nav-tabs">
+                <a href="#" class="p-nav-link active">Overview</a>
+                <a href="{% url 'my_orders' %}" class="p-nav-link">Order History</a>
+                <a href="{% url 'view_cart' %}" class="p-nav-link">Cart</a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Personal Info Card -->
+                <div class="col-12">
+                    <div class="glass-card p-5">
+                        <div class="d-flex align-items-center gap-3 mb-5">
+                            <div class="p-3 rounded-4 bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-person-badge fs-4"></i>
+                            </div>
+                            <h4 class="fw-900 mb-0">Identity & Contact</h4>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-tag">Display Name</span>
+                            <span class="info-data">{{ request.user.username|title }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-tag">Email Address</span>
+                            <span class="info-data text-primary">{{ request.user.email }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-tag">Phone Number</span>
+                            <span class="info-data">
+                                {% if customer and customer.phone %}{{ customer.phone }}{% else %}Not Linked{% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-tag">Current Location</span>
+                            <span class="info-data">
+                                {% if customer and customer.location %}{{ customer.location }}{% else %}Not Set{% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row border-0">
+                            <span class="info-tag">Primary Residence</span>
+                            <span class="info-data text-end" style="max-width: 60%;">
+                                {% if customer and customer.address %}{{ customer.address }}{% else %}No address found{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Grid -->
+                <div class="col-md-6">
+                    <a href="{% url 'my_orders' %}" class="glass-card action-card">
+                        <i class="bi bi-box-seam-fill"></i>
+                        <h5 class="fw-900 mb-2">Track Orders</h5>
+                        <p class="small text-muted px-4">View shipping status and historical purchase data</p>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'view_cart' %}" class="glass-card action-card">
+                        <i class="bi bi-lightning-fill text-warning"></i>
+                        <h5 class="fw-900 mb-2">Fast Checkout</h5>
+                        <p class="small text-muted px-4">Items in your cart are ready for instant fulfillment</p>
+                    </a>
+                </div>
+
+                <!-- Footer Summary -->
+                <div class="col-12">
+                    <div class="glass-card p-4 bg-dark text-white border-0 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-2 bg-white bg-opacity-10 rounded-circle">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <span class="small fw-700">Account Security: <span class="text-success">HIGH</span></span>
+                        </div>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link text-white text-decoration-none fw-800 small p-0">
+                                SIGN OUT SECURELY <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
