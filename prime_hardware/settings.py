@@ -219,16 +219,17 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
+
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-        ),
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 
 
 # =========================================================
@@ -284,3 +285,17 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
 
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "")
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    "cloudinary_storage",
+    "cloudinary",
+
+    "shop",
+]
