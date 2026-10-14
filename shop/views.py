@@ -865,8 +865,10 @@ def checkout(request):
                 },
                 timeout=10,
             )
-            response.raise_for_status()
-
+            if not response.ok:
+    print("Brevo response status:", response.status_code)
+    print("Brevo response body:", response.text[:1000])
+    response.raise_for_status()
         except Exception as e:
             request.session.pop("otp", None)
             print(f"OTP email error: {e}")
