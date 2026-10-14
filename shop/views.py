@@ -836,6 +836,7 @@ def checkout(request):
         request.session['temp_billing_email'] = billing_email
 
         
+       
         try:
             send_mail(
                 "Prime OTP Verification",
@@ -849,15 +850,14 @@ def checkout(request):
             print(f"OTP email error: {e}")
             messages.error(
                 request,
-                "Unable to send OTP. Please check your email settings and try again."
+                "Unable to send OTP. Please try again later."
             )
             return redirect('checkout')
 
         messages.success(request, "OTP sent to your email")
         return redirect('verify_otp')
 
-        messages.success(request, "OTP sent to your email")
-        return redirect('verify_otp')
+
 
     # ================= PLACE ORDER =================
     if request.method == "POST" and "place_order" in request.POST:
