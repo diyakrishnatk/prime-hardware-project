@@ -23,6 +23,7 @@ from django.utils import timezone
 from itertools import groupby
 from django.views.decorators.csrf import csrf_exempt
 import smtplib
+import requests
 
 
 import razorpay
