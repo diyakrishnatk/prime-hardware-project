@@ -22,6 +22,7 @@ from django.middleware.csrf import get_token
 from django.utils import timezone
 from itertools import groupby
 from django.views.decorators.csrf import csrf_exempt
+import smtplib
 
 
 import razorpay
@@ -834,13 +835,27 @@ def checkout(request):
         request.session['temp_billing_name'] = billing_name
         request.session['temp_billing_email'] = billing_email
 
-        send_mail(
-            "Prime OTP Verification",
-            f"Your OTP is: {otp}",
-            settings.EMAIL_HOST_USER,
-            [request.user.email],
-            fail_silently=False,
-        )
+        
+        try:
+            send_mail(
+                "Prime OTP Verification",
+                f"Your OTP is: {otp}",
+                settings.EMAIL_HOST_USER,
+                [request.user.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            request.session.pop('otp', None)
+            print(f"OTP email error: {e}")
+            messages.error(
+                request,
+                "Unable to send OTP. Please check your email settings and try again."
+            )
+            return redirect('checkout')
+
+        messages.success(request, "OTP sent to your email")
+        return redirect('verify_otp')
+
         messages.success(request, "OTP sent to your email")
         return redirect('verify_otp')
 
