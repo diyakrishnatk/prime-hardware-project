@@ -839,7 +839,8 @@ def checkout(request):
         
        
         
-       
+       print("Brevo API key configured:", bool(settings.BREVO_API_KEY))
+       print("Brevo sender configured:", bool(settings.BREVO_SENDER_EMAIL))
         try:
             if not settings.BREVO_API_KEY or not settings.BREVO_SENDER_EMAIL:
                 raise ValueError("Brevo settings are missing")
