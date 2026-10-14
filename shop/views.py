@@ -838,25 +838,43 @@ def checkout(request):
 
         
        
+        
         try:
-            send_mail(
-                "Prime OTP Verification",
-                f"Your OTP is: {otp}",
-                settings.EMAIL_HOST_USER,
-                [request.user.email],
-                fail_silently=False,
+            if not settings.BREVO_API_KEY or not settings.BREVO_SENDER_EMAIL:
+                raise ValueError("Brevo email settings are missing")
+
+            response = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={
+                    "accept": "application/json",
+                    "api-key": settings.BREVO_API_KEY,
+                    "content-type": "application/json",
+                },
+                json={
+                    "sender": {
+                        "name": "Prime Hardware",
+                        "email": settings.BREVO_SENDER_EMAIL,
+                    },
+                    "to": [{"email": request.user.email}],
+                    "subject": "Prime OTP Verification",
+                    "textContent": f"Your OTP is: {otp}",
+                },
+                timeout=10,
             )
+            response.raise_for_status()
+
         except Exception as e:
-            request.session.pop('otp', None)
+            request.session.pop("otp", None)
             print(f"OTP email error: {e}")
             messages.error(
                 request,
                 "Unable to send OTP. Please try again later."
             )
-            return redirect('checkout')
+            return redirect("checkout")
 
         messages.success(request, "OTP sent to your email")
-        return redirect('verify_otp')
+        return redirect("verify_otp")
+
 
 
 
