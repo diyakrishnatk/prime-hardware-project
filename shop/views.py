@@ -840,6 +840,7 @@ def checkout(request):
        
         
        
+        
         print("Brevo API key configured:", bool(settings.BREVO_API_KEY))
         print("Brevo sender configured:", bool(settings.BREVO_SENDER_EMAIL))
 
@@ -865,10 +866,12 @@ def checkout(request):
                 },
                 timeout=10,
             )
+
             if not response.ok:
-    print("Brevo response status:", response.status_code)
-    print("Brevo response body:", response.text[:1000])
-    response.raise_for_status()
+                print("Brevo response status:", response.status_code)
+                print("Brevo response body:", response.text[:1000])
+                response.raise_for_status()
+
         except Exception as e:
             request.session.pop("otp", None)
             print(f"OTP email error: {e}")
@@ -877,6 +880,7 @@ def checkout(request):
                 "Unable to send OTP. Please try again later."
             )
             return redirect("checkout")
+
 
         messages.success(request, "OTP sent to your email")
         return redirect("verify_otp")
