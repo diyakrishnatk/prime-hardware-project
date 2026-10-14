@@ -1,0 +1,1022 @@
+[
+{
+  "model": "shop.product",
+  "pk": 834,
+  "fields": {
+    "name": "Wall Hung Wash Basin",
+    "brand": 4,
+    "price": "3500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Premium ceramic wall-mounted wash basin with smooth finish",
+    "image": "images/wash_basin1.jpg",
+    "stock": 22,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T04:51:56.343Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 835,
+  "fields": {
+    "name": "One Piece Toilet",
+    "brand": 4,
+    "price": "12500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Modern one-piece toilet with soft-close seat cover",
+    "image": "images/toilet1_972FJO4.jpeg",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T04:53:49.674Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 836,
+  "fields": {
+    "name": "Table Top Basin",
+    "brand": 4,
+    "price": "4200.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Stylish tabletop basin ideal for contemporary bathrooms",
+    "image": "images/wash_basin2.jpg",
+    "stock": 10,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T04:55:54.689Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 837,
+  "fields": {
+    "name": "Pedestal Wash Basin",
+    "brand": 4,
+    "price": "3900.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Classic pedestal basin with elegant design",
+    "image": "images/Pedestal_Wash_Basin.jpg",
+    "stock": 5,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T04:57:46.224Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 838,
+  "fields": {
+    "name": "Ceramic Wash Basin",
+    "brand": 1,
+    "price": "3000.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Durable ceramic basin with glossy finish",
+    "image": "images/Ceramic_Wash_Basin.webp",
+    "stock": 15,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:05:20.111Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 839,
+  "fields": {
+    "name": "Western Toilet Seat",
+    "brand": 1,
+    "price": "9500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Comfortable western toilet with dual flush system",
+    "image": "images/Western_Toilet_Seat.jpg",
+    "stock": 20,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:07:22.539Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 840,
+  "fields": {
+    "name": "Wall Mounted Basin",
+    "brand": 1,
+    "price": "2900.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Space-saving wall-mounted basin",
+    "image": "images/Wall_Mounted_Basin.webp",
+    "stock": 30,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:10:06.778Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 841,
+  "fields": {
+    "name": "Designer Basin",
+    "brand": 1,
+    "price": "5000.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Premium designer basin for luxury bathrooms",
+    "image": "images/Designer_Basin.jpg",
+    "stock": 35,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:12:52.767Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 842,
+  "fields": {
+    "name": "Slim Seat Toilet",
+    "brand": 2,
+    "price": "9800.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Sleek slim seat toilet with soft closing lid",
+    "image": "images/Slim_Seat_Toilet.webp",
+    "stock": 6,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:15:04.255Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 843,
+  "fields": {
+    "name": "Wall Hung Basin",
+    "brand": 2,
+    "price": "2600.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Minimalist wall-hung basin for small spaces",
+    "image": "images/wall_hug_basin.jpg",
+    "stock": 1,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:18:37.923Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 844,
+  "fields": {
+    "name": "Counter Top Wash Basin",
+    "brand": 4,
+    "price": "4100.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Elegant countertop basin with modern aesthetics",
+    "image": "images/Counter_Top_Wash_Basin.jpg",
+    "stock": 4,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:22:17.473Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 845,
+  "fields": {
+    "name": "Wash Basin with Cabinet",
+    "brand": 4,
+    "price": "7000.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Basin integrated with storage cabinet",
+    "image": "images/Wash_Basin_with_Cabinet.jpg",
+    "stock": 23,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:24:12.869Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 846,
+  "fields": {
+    "name": "Overhead Shower",
+    "brand": 4,
+    "price": "4500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Round chrome-finish overhead shower with rain spray",
+    "image": "images/shower_KUrVtMu.jpeg",
+    "stock": 9,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:26:21.863Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 847,
+  "fields": {
+    "name": "Hand Shower",
+    "brand": 1,
+    "price": "3500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Compact hand shower with adjustable spray",
+    "image": "images/Hand_Shower.jpg",
+    "stock": 3,
+    "is_offer": true,
+    "offer_percent": 30,
+    "created_at": "2026-03-19T05:30:32.521Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 848,
+  "fields": {
+    "name": "Plastic Water Tank 500L",
+    "brand": 21,
+    "price": "5500.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Durable 3-layer plastic water tank suitable for household use",
+    "image": "images/tank1_pQJTIx9.jpg",
+    "stock": 11,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:44:21.349Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 849,
+  "fields": {
+    "name": "Plastic Water Tank 1000L",
+    "brand": 21,
+    "price": "8500.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "UV-stabilized water tank for long-lasting outdoor use",
+    "image": "images/tank2_hUtnpGW.jpg",
+    "stock": 6,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:45:51.991Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 850,
+  "fields": {
+    "name": "Underground Water Tank 2000L",
+    "brand": 21,
+    "price": "18000.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Heavy-duty underground tank with high storage capacity",
+    "image": "images/tank3_EFAgnPK.jpg",
+    "stock": 18,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:48:17.622Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 851,
+  "fields": {
+    "name": "Water Tank 500L",
+    "brand": 13,
+    "price": "5200.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "High-quality plastic tank for residential use",
+    "image": "images/Water_Tank_500.webp",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:50:28.457Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 852,
+  "fields": {
+    "name": "Water Tank 1000L",
+    "brand": 13,
+    "price": "8000.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Leak-proof tank with strong build quality",
+    "image": "images/Water_Tank_1000L.webp",
+    "stock": 4,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:51:59.775Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 853,
+  "fields": {
+    "name": "Water Tank 500L",
+    "brand": 24,
+    "price": "5000.00",
+    "category": "",
+    "subcategory": null,
+    "description": "Compact water tank for small homes",
+    "image": "images/Water_Tank_500L.webp",
+    "stock": 2,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:54:06.391Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 854,
+  "fields": {
+    "name": "Water Tank 1000L",
+    "brand": 24,
+    "price": "8700.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "ulti-layer tank with anti-bacterial coating",
+    "image": "images/Water_Tank_500L_vK5UFfg.webp",
+    "stock": 25,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:56:56.766Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 855,
+  "fields": {
+    "name": "Underground Tank 2000L",
+    "brand": 24,
+    "price": "17500.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Robust underground tank with high durability",
+    "image": "images/Underground_Tank_2000L.jpg",
+    "stock": 3,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T05:58:55.665Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 856,
+  "fields": {
+    "name": "Underground Tank 2000L",
+    "brand": 13,
+    "price": "17000.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Large capacity underground storage tank",
+    "image": "images/2000l-supreme-underground-water-tank_FepvxA7.jpg",
+    "stock": 2,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T06:01:14.221Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 857,
+  "fields": {
+    "name": "Electric Drill Machine",
+    "brand": 25,
+    "price": "3500.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "High-performance electric drill for precision drilling tasks",
+    "image": "images/Electric_Drill_Machine.webp",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-19T06:11:59.939Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 858,
+  "fields": {
+    "name": "Angle Grinder",
+    "brand": 25,
+    "price": "4200.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Powerful grinder for cutting, polishing, and grinding",
+    "image": "images/Angle_Grinder.jpg",
+    "stock": 26,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:00:28.133Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 859,
+  "fields": {
+    "name": "Impact Drill",
+    "brand": 25,
+    "price": "3000.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Compact impact drill for home and professional use",
+    "image": "images/Impact_Drill.jpg",
+    "stock": 14,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:02:12.940Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 860,
+  "fields": {
+    "name": "Pipe Wrench ",
+    "brand": 27,
+    "price": "900.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Strong pipe wrench for plumbing work",
+    "image": "images/Taparia_VlBcvuj.jpg",
+    "stock": 8,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:05:08.817Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 861,
+  "fields": {
+    "name": "Combination Pliers",
+    "brand": 27,
+    "price": "350.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Heavy-duty pliers for gripping and cutting",
+    "image": "images/Combination_Pliers.webp",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:07:14.679Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 862,
+  "fields": {
+    "name": "Cordless Drill",
+    "brand": 28,
+    "price": "4500.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Rechargeable drill with long battery life",
+    "image": "images/Cordless_Drill.jpg",
+    "stock": 15,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:09:27.132Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 863,
+  "fields": {
+    "name": "Jigsaw Machine",
+    "brand": 28,
+    "price": "3800.00",
+    "category": "Hardware",
+    "subcategory": null,
+    "description": "Electric jigsaw for curved and straight cuts",
+    "image": "images/Jigsaw_Machine.webp",
+    "stock": 21,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:11:01.605Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 864,
+  "fields": {
+    "name": "House Wire 1.5 sqmm",
+    "brand": 9,
+    "price": "900.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Copper house wire suitable for lighting circuits",
+    "image": "images/House_Wire_1.5_sqmm.webp",
+    "stock": 10,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:15:13.540Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 865,
+  "fields": {
+    "name": "House Wire 2.5 sqmm",
+    "brand": 9,
+    "price": "1400.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Heavy-duty wire for power sockets and appliances",
+    "image": "images/House_Wire_2.5_sqmm.jpg",
+    "stock": 5,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:16:50.661Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 866,
+  "fields": {
+    "name": "PVC Insulated Cable",
+    "brand": 9,
+    "price": "2000.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Durable insulated cable for safe installations",
+    "image": "images/PVC_Insulated_Cable.avif",
+    "stock": 22,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:20:42.852Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 867,
+  "fields": {
+    "name": "FR House Wire 1 sqmm",
+    "brand": 7,
+    "price": "700.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Flame-retardant wire for safety in homes",
+    "image": "images/FR_House_Wire_1_sqmm_polycab.webp",
+    "stock": 4,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:26:11.379Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 868,
+  "fields": {
+    "name": "Flexible Cable",
+    "brand": 7,
+    "price": "900.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Highly flexible cable for appliances",
+    "image": "images/Flexible_Cable.jpg",
+    "stock": 17,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:28:28.855Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 869,
+  "fields": {
+    "name": "PVC Pipe 1 inch",
+    "brand": 12,
+    "price": "180.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "High-quality PVC pipe for water supply and drainage",
+    "image": "images/PVC_Pipe_1_inch.png",
+    "stock": 50,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:31:47.138Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 870,
+  "fields": {
+    "name": "CPVC Pipe 3/4 inch\"",
+    "brand": 12,
+    "price": "220.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "Heat-resistant CPVC pipe suitable for hot and cold water",
+    "image": "images/CPVC_Pipe.webp",
+    "stock": 7,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:34:18.803Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 871,
+  "fields": {
+    "name": "Pipe Elbow 90°",
+    "brand": 12,
+    "price": "40.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "Durable elbow fitting for pipe direction change",
+    "image": "images/Elbow_90.jpg",
+    "stock": 33,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:38:03.699Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 872,
+  "fields": {
+    "name": "Pipe Tee Joint",
+    "brand": 12,
+    "price": "90.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "T-shaped connector for branching pipe lines",
+    "image": "images/T-shaped_connector_for_branching_pipe_lines.jpg",
+    "stock": 60,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:40:47.112Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 873,
+  "fields": {
+    "name": "UPVC Pipe",
+    "brand": 9,
+    "price": "200.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "trong UPVC pipe for plumbing systems",
+    "image": "images/finolex-cpvc-pipes_ySR4Ya3.jpg",
+    "stock": 118,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-20T15:42:27.022Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 874,
+  "fields": {
+    "name": "Pipe Coupling",
+    "brand": 9,
+    "price": "50.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Connector used to join two pipes securely",
+    "image": "images/Pipe_Coupling.webp",
+    "stock": 1,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:20:00.318Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 875,
+  "fields": {
+    "name": "Flexible Hose Pipe",
+    "brand": 9,
+    "price": "400.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Flexible pipe for kitchen and bathroom use",
+    "image": "images/Flexible_Hose_Pipe.webp",
+    "stock": 40,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:22:56.522Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 876,
+  "fields": {
+    "name": "PVC Pipe 1 inch",
+    "brand": 11,
+    "price": "260.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Premium CPVC pipe for high-temperature applications",
+    "image": "images/PVC_Pipe_1_inch.webp",
+    "stock": 23,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:25:53.758Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 877,
+  "fields": {
+    "name": "Pipe Reducer",
+    "brand": 11,
+    "price": "70.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Fitting used to connect pipes of different sizes",
+    "image": "images/Pipe_Reducer.webp",
+    "stock": 16,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:27:57.584Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 878,
+  "fields": {
+    "name": "Pipe Clamp",
+    "brand": 11,
+    "price": "30.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Clamp used to hold pipes firmly in place",
+    "image": "images/Pipe_Clamp.webp",
+    "stock": 70,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:29:38.686Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 879,
+  "fields": {
+    "name": "Pipe Bend",
+    "brand": 13,
+    "price": "45.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Smooth bend fitting for directional changes",
+    "image": "images/Pipe_Bend.jpeg",
+    "stock": 44,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:36:46.979Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 880,
+  "fields": {
+    "name": "Foot Valve",
+    "brand": 13,
+    "price": "600.00",
+    "category": "plumbing",
+    "subcategory": null,
+    "description": "Valve used in suction lines for pumps",
+    "image": "images/Foot_Valve.jpg",
+    "stock": 33,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:38:15.528Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 882,
+  "fields": {
+    "name": "Bottle Trap",
+    "brand": 1,
+    "price": "850.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Drain trap for wash basins",
+    "image": "images/Bottle_Trap.avif",
+    "stock": 15,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T06:44:11.232Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 883,
+  "fields": {
+    "name": "Parryware Hand Shower with Hose",
+    "brand": 2,
+    "price": "1459.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Handheld shower with ergonomic grip and flexible hose.",
+    "image": "images/hand_shower",
+    "stock": 60,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T07:26:32.761Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 884,
+  "fields": {
+    "name": "Parryware Overhead Shower with Arm",
+    "brand": 2,
+    "price": "1890.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Chrome-finish overhead rain shower with wide coverage.",
+    "image": "images/Parryware_Overhead_Shower_with_Arm",
+    "stock": 15,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T07:30:37.809Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 885,
+  "fields": {
+    "name": "Parryware Activa Single Piece Water Closet",
+    "brand": 2,
+    "price": "12050.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Modern one-piece toilet with sleek design and efficient flushing.",
+    "image": "images/Parryware_Activa_Single_Piece_Water_Closet",
+    "stock": 6,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T07:35:02.375Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 886,
+  "fields": {
+    "name": "Parryware Claret Bib Tap Faucet",
+    "brand": 2,
+    "price": "1230.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Wall-mounted bib tap for bathroom and utility use",
+    "image": "images/Parryware_Claret_Bib_Tap_Faucet",
+    "stock": 18,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T07:37:48.401Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 887,
+  "fields": {
+    "name": "Health Faucet Deluxe",
+    "brand": 4,
+    "price": "890.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "ABS chrome finish health faucet with flexible hose and wall hook",
+    "image": "images/Health_Faucet_Deluxe.webp",
+    "stock": 22,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:08:25.568Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 888,
+  "fields": {
+    "name": "Bib Tap Long Body",
+    "brand": 4,
+    "price": "1250.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Wall-mounted bib tap for bathroom and utility use",
+    "image": "images/51E-lW2A8ML._AC_UF10001000_QL80_.jpg",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:10:05.825Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 889,
+  "fields": {
+    "name": "Two Piece Closet",
+    "brand": 4,
+    "price": "9500.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Durable two-piece toilet suitable for home and commercial use",
+    "image": "images/Two_Piece_Closet.jpg",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:11:55.091Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 890,
+  "fields": {
+    "name": "Sylvina Bib Cock Wash Basin Water Tap",
+    "brand": 4,
+    "price": "2310.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Wall-mounted chrome bib tap with durable brass body and smooth water flow",
+    "image": "images/Sylvina_Bib_Cock_Wash_Basin_Water_Tap",
+    "stock": 10,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:15:42.334Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 891,
+  "fields": {
+    "name": " Continental Basin Tap",
+    "brand": 4,
+    "price": "1560.00",
+    "category": "Sanitary",
+    "subcategory": null,
+    "description": "Stylish basin tap suitable for modern bathrooms\r\n",
+    "image": "images/Continental_Basin_Tap",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:17:54.566Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 892,
+  "fields": {
+    "name": "Vectus Silk 3 Layer Yellow 500L Overhead Tank",
+    "brand": 24,
+    "price": "3800.00",
+    "category": "Storage",
+    "subcategory": null,
+    "description": "Compact triple-layer tank ideal for small homes and apartments.",
+    "image": "images/yellow_500l_tank_vectus",
+    "stock": 17,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:26:43.152Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 893,
+  "fields": {
+    "name": "4 sqmm DC Cable",
+    "brand": 7,
+    "price": "3400.00",
+    "category": "Electrical",
+    "subcategory": null,
+    "description": "Used in solar and DC electrical systems.",
+    "image": "images/polycab_KOiuz1F.webp",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:37:57.398Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 894,
+  "fields": {
+    "name": "RN Heavy-Duty Forged Brass Ball Valve",
+    "brand": 13,
+    "price": "300.00",
+    "category": "Plumbing",
+    "subcategory": null,
+    "description": "Used in homes, tanks, pipelines, and pumps",
+    "image": "images/RN_Heavy-Duty_Forged_Brass_Ball_Valve",
+    "stock": 12,
+    "is_offer": false,
+    "offer_percent": 0,
+    "created_at": "2026-03-27T08:53:46.433Z"
+  }
+}
+]

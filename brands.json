@@ -1,0 +1,245 @@
+[
+{
+  "model": "shop.brand",
+  "pk": 1,
+  "fields": {
+    "name": "Hindware",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 2,
+  "fields": {
+    "name": "Parryware",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 4,
+  "fields": {
+    "name": "Jaquar",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 5,
+  "fields": {
+    "name": "Somany",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 6,
+  "fields": {
+    "name": "Havells",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 7,
+  "fields": {
+    "name": "Polycab",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 8,
+  "fields": {
+    "name": "Anchor",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 9,
+  "fields": {
+    "name": "Finolex",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 10,
+  "fields": {
+    "name": "Legrand",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 11,
+  "fields": {
+    "name": "Astral",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 12,
+  "fields": {
+    "name": "Ashirvad",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 13,
+  "fields": {
+    "name": "Supreme",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 14,
+  "fields": {
+    "name": "Prince",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 15,
+  "fields": {
+    "name": "Finolex Pipes",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 16,
+  "fields": {
+    "name": "Godrej",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 17,
+  "fields": {
+    "name": "Dorset",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 18,
+  "fields": {
+    "name": "Hettich",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 19,
+  "fields": {
+    "name": "Ebco",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 20,
+  "fields": {
+    "name": "Hafele",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 21,
+  "fields": {
+    "name": "Sintex",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 22,
+  "fields": {
+    "name": "Plasto",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 23,
+  "fields": {
+    "name": "Nilkamal",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 24,
+  "fields": {
+    "name": "Vectus",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 25,
+  "fields": {
+    "name": "Bosch",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 26,
+  "fields": {
+    "name": "Tata Steel",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 27,
+  "fields": {
+    "name": "Taparia",
+    "description": null,
+    "logo": ""
+  }
+},
+{
+  "model": "shop.brand",
+  "pk": 28,
+  "fields": {
+    "name": "Black+Decker",
+    "description": null,
+    "logo": ""
+  }
+}
+]
