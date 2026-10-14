@@ -1,5 +1,8 @@
+
 import os
 from pathlib import Path
+
+import dj_database_url
 
 # =========================================================
 # 1. BASE DIRECTORY
@@ -36,7 +39,6 @@ ALLOWED_HOSTS = [
 # =========================================================
 
 CSRF_USE_SESSIONS = False
-
 SESSION_SAVE_EVERY_REQUEST = True
 
 SESSION_COOKIE_NAME = "prime_final_session"
@@ -45,7 +47,6 @@ CSRF_COOKIE_NAME = "prime_final_csrf"
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = True
 
-# Local development uses HTTP; Render uses HTTPS.
 SECURE_COOKIES = (
     os.environ.get("SECURE_COOKIES", "False").lower() == "true"
 )
@@ -63,10 +64,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://0.0.0.0:8000",
     "http://0.0.0.0",
+    "https://prime-hardware-project.onrender.com",
 ]
-
-# Add your actual Render domain to CSRF_TRUSTED_ORIGINS
-# after deployment, if required.
 
 
 # =========================================================
@@ -81,7 +80,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Prime Hardware application
+    # Cloudinary image storage
+    "cloudinary_storage",
+    "cloudinary",
+
+    # Main application
     "shop",
 ]
 
@@ -139,11 +142,8 @@ WSGI_APPLICATION = "prime_hardware.wsgi.application"
 
 
 # =========================================================
-# =========================================================
 # 9. DATABASE CONFIGURATION
 # =========================================================
-
-import dj_database_url
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
@@ -162,6 +162,7 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 
 # =========================================================
 # 10. PASSWORD VALIDATION
@@ -200,7 +201,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================================================
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
@@ -220,82 +220,72 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
+# =========================================================
+# 13. CLOUDINARY CONFIGURATION
+# =========================================================
 
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
 
+# =========================================================
+# 14. FILE STORAGE CONFIGURATION
+# =========================================================
 
-# =========================================================
-# 13. MEDIA FILES CONFIGURATION
-# =========================================================
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+        ),
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        ),
+    },
+}
 
 MEDIA_URL = "/media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
 
 
 # =========================================================
-# 14. DEFAULT PRIMARY KEY
+# 15. DEFAULT PRIMARY KEY
 # =========================================================
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # =========================================================
-# 15. LOGIN AND LOGOUT
+# 16. LOGIN AND LOGOUT
 # =========================================================
 
 LOGIN_URL = "/signin/"
-
 LOGIN_REDIRECT_URL = "/admin-dashboard/"
-
 LOGOUT_REDIRECT_URL = "/"
 
 
 # =========================================================
-# 16. EMAIL CONFIGURATION
+# 17. EMAIL CONFIGURATION
 # =========================================================
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
 EMAIL_HOST = "smtp.gmail.com"
-
 EMAIL_PORT = 587
-
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # =========================================================
-# 17. RAZORPAY CONFIGURATION
+# 18. RAZORPAY CONFIGURATION
 # =========================================================
 
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
-
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "")
-
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-
-    "cloudinary_storage",
-    "cloudinary",
-
-    "shop",
-]
