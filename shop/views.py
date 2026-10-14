@@ -839,9 +839,10 @@ def checkout(request):
         
        
         
+       
         try:
             if not settings.BREVO_API_KEY or not settings.BREVO_SENDER_EMAIL:
-                raise ValueError("Brevo email settings are missing")
+                raise ValueError("Brevo settings are missing")
 
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
@@ -874,6 +875,7 @@ def checkout(request):
 
         messages.success(request, "OTP sent to your email")
         return redirect("verify_otp")
+
 
 
 
