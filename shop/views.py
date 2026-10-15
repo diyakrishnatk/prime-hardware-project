@@ -1041,26 +1041,38 @@ def checkout(request):
                 print("Brevo email error:", exc)
                 error_detail = str(exc)
 
-        # 4. Try Resend if configured
-        if not email_sent and getattr(settings, 'RESEND_API_KEY', '') and getattr(settings, 'RESEND_FROM_EMAIL', ''):
+        # 4. Try Resend HTTPS API if configured
+        resend_key = getattr(settings, 'RESEND_API_KEY', '') or os.environ.get('RESEND_API_KEY', '')
+        resend_from = getattr(settings, 'RESEND_FROM_EMAIL', '') or os.environ.get('RESEND_FROM_EMAIL', '') or 'onboarding@resend.dev'
+        if not email_sent and resend_key:
             try:
                 response = requests.post(
                     "https://api.resend.com/emails",
                     headers={
-                        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                        "Authorization": f"Bearer {resend_key}",
                         "Content-Type": "application/json",
                     },
                     json={
-                        "from": f"Prime Hardware <{settings.RESEND_FROM_EMAIL}>",
+                        "from": f"Prime Hardware <{resend_from}>",
                         "to": [recipient_email],
-                        "subject": "Prime Hardware OTP Verification",
-                        "text": f"Your OTP is: {otp}",
+                        "subject": f"Your Prime Hardware OTP is {otp}",
+                        "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 480px; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+                            <h2 style="color: #2563eb; margin-bottom: 15px;">Prime Hardware</h2>
+                            <p style="color: #334155; font-size: 15px;">Hello {billing_name},</p>
+                            <p style="color: #475569; font-size: 14px;">Your verification code to complete your order is:</p>
+                            <div style="text-align: center; margin: 25px 0;">
+                                <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #1e293b; background: #eff6ff; padding: 10px 24px; border-radius: 8px; border: 2px dashed #3b82f6; display: inline-block;">{otp}</span>
+                            </div>
+                            <p style="color: #94a3b8; font-size: 12px; text-align: center;">This code expires in 5 minutes. Do not share it with anyone.</p>
+                        </div>
+                        """,
                     },
                     timeout=15,
                 )
                 if response.ok:
                     email_sent = True
-                    print("OTP sent via Resend")
+                    print(f"OTP successfully sent via Resend to {recipient_email}", flush=True)
                 else:
                     print("Resend response status:", response.status_code, response.text[:300])
                     error_detail = f"Resend HTTP {response.status_code}"
