@@ -186,16 +186,6 @@
                 Expires in <span id="countdown">05:00</span>
             </div>
 
-            <div class="alert alert-info py-2 px-3 mb-3 text-center" style="border-radius: 14px; font-size: 0.85rem; font-weight: 600; background: #eff6ff; border: 1.5px dashed #3b82f6; color: #1d4ed8;">
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #3b82f6; margin-bottom: 2px;">
-                    <i class="bi bi-shield-check me-1"></i> Verification Code
-                </div>
-                <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: 6px; color: #1e40af;">
-                    {{ dev_otp|default:"123456" }}
-                </div>
-                <span class="text-muted d-block" style="font-size: 0.75rem;">(Check your email inbox or use the code above)</span>
-            </div>
-
             <form method="POST">
                 {% csrf_token %}
 
@@ -212,7 +202,7 @@
                 {% endif %}
 
 
-                <input type="text" name="otp" maxlength="6" required class="otp-input-field w-100" placeholder="{{ dev_otp|default:'123456' }}" value="{{ dev_otp|default:'123456' }}"
+                <input type="text" name="otp" maxlength="6" required class="otp-input-field w-100" placeholder="000000"
                     autocomplete="one-time-code">
 
                 <button type="submit" name="verify_otp" class="btn-verify">
