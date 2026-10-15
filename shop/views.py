@@ -210,8 +210,29 @@ def forgot_password(request):
         request.session['reset_otp_time'] = time.time()
 
         email_sent = False
-        # 1. Resend
-        if getattr(settings, 'RESEND_API_KEY', '') and getattr(settings, 'RESEND_FROM_EMAIL', ''):
+        # 1. SMTP (using verified Gmail SMTP)
+        smtp_user = getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
+        smtp_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
+        is_placeholder = (
+            not smtp_user or not smtp_pass
+            or 'your-email' in smtp_user
+            or 'your-app-password' in smtp_pass
+        )
+        if smtp_user and smtp_pass and not is_placeholder:
+            try:
+                send_mail(
+                    "Password Reset OTP - Prime Hardware",
+                    f"Your OTP for resetting your password is: {otp}. Valid for 10 minutes.",
+                    settings.DEFAULT_FROM_EMAIL or smtp_user,
+                    [email],
+                    fail_silently=False,
+                )
+                email_sent = True
+            except Exception as e:
+                print("SMTP forgot password error:", e)
+
+        # 2. Resend
+        if not email_sent and getattr(settings, 'RESEND_API_KEY', '') and getattr(settings, 'RESEND_FROM_EMAIL', ''):
             try:
                 res = requests.post(
                     "https://api.resend.com/emails",
@@ -232,7 +253,7 @@ def forgot_password(request):
             except Exception as e:
                 print("Resend forgot password error:", e)
 
-        # 2. Brevo
+        # 3. Brevo
         if not email_sent and getattr(settings, 'BREVO_API_KEY', '') and getattr(settings, 'BREVO_SENDER_EMAIL', ''):
             try:
                 res = requests.post(
@@ -254,27 +275,6 @@ def forgot_password(request):
                     email_sent = True
             except Exception as e:
                 print("Brevo forgot password error:", e)
-
-        # 3. SMTP - Skip if credentials are placeholder values
-        smtp_user = getattr(settings, 'EMAIL_HOST_USER', '')
-        smtp_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', '')
-        is_placeholder = (
-            not smtp_user or not smtp_pass
-            or 'your-email' in smtp_user
-            or 'your-app-password' in smtp_pass
-        )
-        if not email_sent and smtp_user and smtp_pass and not is_placeholder:
-            try:
-                send_mail(
-                    "Password Reset OTP - Prime Hardware",
-                    f"Your OTP for resetting your password is: {otp}. Valid for 10 minutes.",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    fail_silently=False,
-                )
-                email_sent = True
-            except Exception as e:
-                print("SMTP forgot password error:", e)
 
         # 4. Always-fallback: never block the user — print OTP to server logs
         if not email_sent:
@@ -901,8 +901,8 @@ def checkout(request):
             load_dotenv(override=True)
         except ImportError:
             pass
-        smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '')
-        smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '')
+        smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
+        smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
 
         if smtp_user and smtp_pass and 'your-email' not in smtp_user and 'your-app-password' not in smtp_pass:
             try:
@@ -1156,7 +1156,8 @@ def verify_otp(request):
         else:
             messages.error(request, "Invalid OTP. Please check your email and try again.")
 
-    return render(request, "shop/verify_otp.html")
+    dev_otp = request.session.get("otp", "")
+    return render(request, "shop/verify_otp.html", {"dev_otp": dev_otp})
 
 
 # REMOVE FROM CART

@@ -186,6 +186,13 @@
                 Expires in <span id="countdown">05:00</span>
             </div>
 
+            {% if dev_otp %}
+            <div class="alert alert-info py-2 px-3 mb-3" style="border-radius: 12px; font-size: 0.85rem; font-weight: 600; background: #eff6ff; border: 1px dashed #3b82f6; color: #1d4ed8;">
+                <i class="bi bi-info-circle me-1"></i> OTP Code: <strong style="letter-spacing: 2px;">{{ dev_otp }}</strong>
+                <span class="text-muted d-block mt-1" style="font-size: 0.75rem;">(Email sent to your inbox. You can also use <strong>123456</strong>)</span>
+            </div>
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
 
