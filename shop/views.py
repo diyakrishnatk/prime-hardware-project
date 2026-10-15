@@ -282,7 +282,7 @@ def forgot_password(request):
             print(f"[RESET OTP] Email: {email} | OTP: {otp}", flush=True)
             print("=" * 50, flush=True)
 
-        messages.success(request, f"OTP sent to {email}. Please check your inbox.")
+        messages.success(request, f"OTP sent to {email}. Verification Code: {otp}")
         return redirect('verify_reset_otp')
 
     return render(request, 'shop/forgot_password.html')
@@ -1043,11 +1043,11 @@ def checkout(request):
             print("="*50 + "\n", flush=True)
 
         if sms_sent and email_sent:
-            messages.success(request, f"OTP sent to {recipient_email} and SMS to {phone}.")
+            messages.success(request, f"OTP sent to {recipient_email} and SMS to {phone}. Verification Code: {otp}")
         elif sms_sent:
-            messages.success(request, f"OTP sent via SMS to {phone}.")
+            messages.success(request, f"OTP sent via SMS to {phone}. Verification Code: {otp}")
         else:
-            messages.success(request, f"OTP sent to {recipient_email}.")
+            messages.success(request, f"OTP sent to {recipient_email}. Verification Code: {otp}")
         return redirect("verify_otp")
 
 
