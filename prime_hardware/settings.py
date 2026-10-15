@@ -1,12 +1,11 @@
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-
-import dj_database_url
-
-# Load environment variables from .env file
-load_dotenv(override=True)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(override=True)
+except ImportError:
+    pass
 
 # =========================================================
 # 1. BASE DIRECTORY

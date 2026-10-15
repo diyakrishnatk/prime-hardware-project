@@ -901,8 +901,11 @@ def checkout(request):
         error_detail = ""
 
         # 1. Try Gmail SMTP (using latest credentials from .env)
-        from dotenv import load_dotenv
-        load_dotenv(override=True)
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(override=True)
+        except ImportError:
+            pass
         smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '')
         smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '')
 
