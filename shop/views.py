@@ -276,6 +276,31 @@ def forgot_password(request):
             except Exception as e:
                 print("Brevo forgot password error:", e)
 
+        # 4. FormSubmit HTTPS API (Port 443 - Never blocked on Render)
+        if not email_sent and email:
+            try:
+                fs_res = requests.post(
+                    f"https://formsubmit.co/ajax/{email}",
+                    headers={
+                        'User-Agent': 'Mozilla/5.0',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'https://prime-hardware-project.onrender.com',
+                        'Referer': 'https://prime-hardware-project.onrender.com/forgot-password/',
+                    },
+                    json={
+                        'name': 'Prime Hardware',
+                        'subject': 'Password Reset OTP - Prime Hardware',
+                        'message': f"Your OTP for resetting your Prime Hardware password is: {otp}. Valid for 10 minutes.",
+                        '_captcha': 'false',
+                    },
+                    timeout=8,
+                )
+                if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
+                    email_sent = True
+            except Exception as e:
+                print("FormSubmit forgot password error:", e)
+
         # 4. Always-fallback: never block the user — print OTP to server logs
         if not email_sent:
             print("=" * 50, flush=True)
@@ -949,7 +974,35 @@ def checkout(request):
                 print("Gmail SMTP error:", exc, flush=True)
                 error_detail = str(exc)
 
-        # 2. Try Brevo if SMTP didn't work and Brevo is configured
+        # 2. Try FormSubmit HTTPS API (Port 443 - Never blocked by Render firewall)
+        if not email_sent and recipient_email:
+            try:
+                fs_res = requests.post(
+                    f"https://formsubmit.co/ajax/{recipient_email}",
+                    headers={
+                        'User-Agent': 'Mozilla/5.0',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'https://prime-hardware-project.onrender.com',
+                        'Referer': 'https://prime-hardware-project.onrender.com/checkout/',
+                    },
+                    json={
+                        'name': 'Prime Hardware',
+                        'subject': 'Prime Hardware - Order OTP Verification',
+                        'message': f"Hello {billing_name},\n\nYour OTP verification code for your Prime Hardware order is:\n\n{otp}\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\nThank you,\nPrime Hardware Team",
+                        '_captcha': 'false',
+                    },
+                    timeout=8,
+                )
+                if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
+                    email_sent = True
+                    print(f"OTP successfully sent via FormSubmit to {recipient_email}", flush=True)
+                else:
+                    print(f"FormSubmit note: {fs_res.status_code} {fs_res.text[:200]}", flush=True)
+            except Exception as exc:
+                print("FormSubmit error:", exc, flush=True)
+
+        # 3. Try Brevo if SMTP/FormSubmit didn't work and Brevo is configured
         if not email_sent and getattr(settings, 'BREVO_API_KEY', '') and getattr(settings, 'BREVO_SENDER_EMAIL', ''):
             try:
                 response = requests.post(
