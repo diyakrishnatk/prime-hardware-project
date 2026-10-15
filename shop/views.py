@@ -931,7 +931,8 @@ def checkout(request):
         if recipient_email:
             try:
                 fs_payload = {
-                    '_subject': f"Prime Hardware - Your OTP Verification Code ({otp})",
+                    'name': 'Prime Hardware',
+                    '_subject': f"Your Prime Hardware OTP is {otp}",
                     'Verification_Code': str(otp),
                     'Valid_For': '5 Minutes',
                     'Notice': 'Please enter this verification code on the Prime Hardware checkout page to complete your order. Do not share this code.',
@@ -1102,12 +1103,6 @@ def checkout(request):
                 print("[EMAIL STATUS]: Delivery pending. Code printed above.", flush=True)
             print("="*50 + "\n", flush=True)
 
-        if sms_sent and email_sent:
-            messages.success(request, f"OTP sent to {recipient_email} and SMS to {phone}. Please check your email inbox.")
-        elif sms_sent:
-            messages.success(request, f"OTP sent via SMS to {phone}. Please check your phone messages.")
-        else:
-            messages.success(request, f"OTP sent to {recipient_email}. Please check your email inbox.")
         return redirect("verify_otp")
 
 
