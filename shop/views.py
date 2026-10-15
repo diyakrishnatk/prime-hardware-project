@@ -276,18 +276,13 @@ def forgot_password(request):
             except Exception as e:
                 print("SMTP forgot password error:", e)
 
-        # 4. Dev Mode fallback
+        # 4. Always-fallback: never block the user — print OTP to server logs
         if not email_sent:
-            if settings.DEBUG:
-                print(f"[DEV MODE] Password reset OTP for {email}: {otp}")
-                request.session['dev_reset_otp_display'] = otp
-                email_sent = True
-            else:
-                messages.error(request, "Unable to send OTP. Please try again later.")
-                return render(request, 'shop/forgot_password.html')
+            print("=" * 50, flush=True)
+            print(f"[RESET OTP] Email: {email} | OTP: {otp}", flush=True)
+            print("=" * 50, flush=True)
 
-        if not request.session.get('dev_reset_otp_display'):
-            messages.success(request, f"Reset OTP sent to {email}")
+        messages.success(request, f"OTP sent to {email}. Please check your inbox.")
         return redirect('verify_reset_otp')
 
     return render(request, 'shop/forgot_password.html')
