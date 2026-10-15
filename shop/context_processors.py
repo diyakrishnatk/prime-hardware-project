@@ -7,13 +7,10 @@ def cart_renderer(request):
     Supports both DB-based (authenticated) and session-based (guest) carts.
     """
     if request.user.is_authenticated:
-        # Sum quantities from CartItem model for logged-in users
         result = CartItem.objects.filter(user=request.user).aggregate(total=Sum('quantity'))
         cart_count = result.get('total') or 0
     else:
-        # Sum quantities from session for guests
-        cart = request.session.get('cart', {})
-        cart_count = sum(item.get('quantity', 0) for item in cart.values())
+        cart_count = 0
     
     return {
         'cart_count': cart_count,

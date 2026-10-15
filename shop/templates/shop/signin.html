@@ -210,6 +210,9 @@
 
             <form method="POST">
                 {% csrf_token %}
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
 
                 {% if messages %}
                 <div class="mb-3">
@@ -240,7 +243,7 @@
                             Remember me
                         </label>
                     </div>
-                    <a href="#" class="small text-primary fw-600 text-decoration-none">Forgot Password?</a>
+                    <a href="{% url 'forgot_password' %}" class="small text-primary fw-600 text-decoration-none">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="btn-auth">Sign In</button>
@@ -248,7 +251,7 @@
 
             <div class="auth-footer">
                 Don't have an account?
-                <a href="/signup/">Create an account</a>
+                <a href="{% url 'signup' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">Create an account</a>
             </div>
         </div>
     </div>

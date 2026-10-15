@@ -222,15 +222,21 @@
                     {{ product.description }}
                 </p>
 
-                {% if product.stock > 0 %}
-                <a href="{% url 'buy_now' product.id %}" class="btn-tactical btn-primary">
-                    INITIALIZE ORDER <i class="bi bi-lightning-charge-fill"></i>
-                </a>
-                <a href="{% url 'add_to_cart' product.id %}" class="btn-tactical btn-outline">
-                    ADD TO BUFFER <i class="bi bi-plus-circle"></i>
-                </a>
+                {% if user.is_authenticated %}
+                    {% if product.stock > 0 %}
+                    <a href="{% url 'buy_now' product.id %}" class="btn-tactical btn-primary">
+                        INITIALIZE ORDER <i class="bi bi-lightning-charge-fill"></i>
+                    </a>
+                    <a href="{% url 'add_to_cart' product.id %}" class="btn-tactical btn-outline">
+                        ADD TO BUFFER <i class="bi bi-plus-circle"></i>
+                    </a>
+                    {% else %}
+                    <div class="btn-tactical btn-outline opacity-30">ALL UNITS ALLOCATED</div>
+                    {% endif %}
                 {% else %}
-                <div class="btn-tactical btn-outline opacity-30">ALL UNITS ALLOCATED</div>
+                    <a href="{% url 'signin' %}?next={{ request.get_full_path|urlencode }}" class="btn-tactical btn-primary">
+                        SIGN IN TO PURCHASE <i class="bi bi-box-arrow-in-right"></i>
+                    </a>
                 {% endif %}
             </div>
         </section>

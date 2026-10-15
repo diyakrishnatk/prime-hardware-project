@@ -30,6 +30,9 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
     path('logout/', views.signout, name='logout'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('verify-reset-otp/', views.verify_reset_otp, name='verify_reset_otp'),
+    path('reset-password/', views.reset_password, name='reset_password'),
 
     # ADMIN
     path('admin-login/', views.admin_login, name='admin_login'),

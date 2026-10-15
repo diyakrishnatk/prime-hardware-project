@@ -8,7 +8,7 @@
                 {% else %}
                 <span class="l-badge badge-stock-out">Depleted</span>
                 {% endif %}
-                
+
                 {% if product.is_offer %}
                 <span class="l-badge badge-offer">{{ product.offer_percent }}%</span>
                 {% endif %}
@@ -16,7 +16,8 @@
 
             <div class="lux-product-frame">
                 {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="lux-img">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="lux-img"
+                    onerror="console.error('Product image failed to load:', this.src)">
                 {% else %}
                 <div class="lux-placeholder">
                     <i class="bi bi-box-seam"></i>
@@ -50,19 +51,25 @@
                 {% endif %}
             </div>
 
-            <div class="d-flex gap-3">
-                {% if product.stock|default:0 > 0 %}
-                <a href="{% url 'buy_now' product.id %}" class="btn-action btn-buy-now" title="Buy Now">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                </a>
-                <a href="{% url 'add_to_cart' product.id %}" class="btn-action btn-add-cart"
-                    title="Add to Cart">
-                    <i class="bi bi-cart-plus"></i>
-                </a>
+            <div class="d-flex gap-3 align-items-center">
+                {% if user.is_authenticated %}
+                    {% if product.stock|default:0 > 0 %}
+                    <a href="{% url 'buy_now' product.id %}" class="btn-action btn-buy-now" title="Buy Now">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </a>
+                    <a href="{% url 'add_to_cart' product.id %}" class="btn-action btn-add-cart" title="Add to Cart">
+                        <i class="bi bi-cart-plus"></i>
+                    </a>
+                    {% else %}
+                    <button class="btn-action btn-add-cart opacity-40 cursor-not-allowed" disabled title="Out of Stock">
+                        <i class="bi bi-cart-x"></i>
+                    </button>
+                    {% endif %}
                 {% else %}
-                <button class="btn-action btn-add-cart opacity-40 cursor-not-allowed" disabled>
-                    <i class="bi bi-cart-x"></i>
-                </button>
+                    <a href="{% url 'signin' %}?next={{ request.get_full_path|urlencode }}" class="btn-signin-prompt" title="Sign in to Buy">
+                        <span>Sign In</span>
+                        <i class="bi bi-box-arrow-in-right"></i>
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -118,7 +125,7 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+        filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.1));
     }
 
     .lux-placeholder {
@@ -144,12 +151,24 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .badge-stock { background: rgba(16, 185, 129, 0.1); color: #059669; }
-    .badge-stock-out { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
-    .badge-offer { background: #ef4444; color: white; border: none; }
+    .badge-stock {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .badge-stock-out {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+    }
+
+    .badge-offer {
+        background: #ef4444;
+        color: white;
+        border: none;
+    }
 
     .lux-brand-tag {
         position: absolute;
@@ -163,7 +182,7 @@
         color: #0f172a;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         border: 1px solid #f1f5f9;
         z-index: 10;
     }
@@ -252,5 +271,29 @@
         background: #e2e8f0;
         transform: scale(1.1);
         color: #3b82f6;
+    }
+
+    .btn-signin-prompt {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 54px;
+        padding: 0 1.25rem;
+        border-radius: 18px;
+        background: #0f172a;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+        white-space: nowrap;
+    }
+
+    .btn-signin-prompt:hover {
+        background: #3b82f6;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
     }
 </style>

@@ -1,8 +1,12 @@
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 import dj_database_url
+
+# Load environment variables from .env file
+load_dotenv(override=True)
 
 # =========================================================
 # 1. BASE DIRECTORY
@@ -15,23 +19,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # 2. SECURITY SETTINGS
 # =========================================================
 
+
+DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 if not SECRET_KEY:
-    if os.environ.get("DEBUG", "False").lower() == "true":
-        SECRET_KEY = "local-development-only-change-this-key"
+    if DEBUG:
+        SECRET_KEY = "django-insecure-prime-hardware-dev-key-change-in-prod"
     else:
         raise RuntimeError(
-            "SECRET_KEY environment variable is required."
+            "SECRET_KEY environment variable is required in production."
         )
-
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "testserver",
     ".onrender.com",
 ]
+
 
 
 # =========================================================
@@ -231,25 +237,41 @@ CLOUDINARY_STORAGE = {
 }
 
 
+
 # =========================================================
 # 14. FILE STORAGE CONFIGURATION
 # =========================================================
 
-STORAGES = {
-    "default": {
-        "BACKEND": (
-            "cloudinary_storage.storage.MediaCloudinaryStorage"
-        ),
-    },
-    "staticfiles": {
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-        ),
-    },
-}
+LOCAL_IMAGES = os.environ.get("LOCAL_IMAGES", "True").lower() == "true"
+
+if LOCAL_IMAGES:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": (
+                "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            ),
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": (
+                "cloudinary_storage.storage.MediaCloudinaryStorage"
+            ),
+        },
+        "staticfiles": {
+            "BACKEND": (
+                "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            ),
+        },
+    }
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
 
 
 # =========================================================
@@ -268,21 +290,31 @@ LOGIN_REDIRECT_URL = "/admin-dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 
+
 # =========================================================
-# 17. EMAIL CONFIGURATION
+# 17. EMAIL CONFIGURATION - RESEND & BREVO & SMTP
 # =========================================================
+
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "")
+
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
+BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_TIMEOUT = 10
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
-BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or RESEND_FROM_EMAIL or BREVO_SENDER_EMAIL
+
+# Fast2SMS Configuration (For Phone SMS OTP in India)
+FAST2SMS_API_KEY = os.environ.get("FAST2SMS_API_KEY", "")
+
+
 
 
 # =========================================================
