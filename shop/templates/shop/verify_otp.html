@@ -178,12 +178,11 @@
 
             <div class="logo-text">Prime</div>
             <h3 class="fw-800 text-dark mb-2">Security Verification</h3>
-            <p class="text-muted mb-4 px-4">We've sent a 6-digit code to your email. Please enter it below to confirm
-                your order.</p>
+            <p class="text-muted mb-4 px-4">We've sent a 6-digit code to your email. Please check your inbox and enter the code below. Email may take a few minutes to arrive.</p>
 
             <div class="timer-badge" id="timer-box">
                 <i class="bi bi-clock-history"></i>
-                Expires in <span id="countdown">05:00</span>
+                Expires in <span id="countdown">30:00</span>
             </div>
 
             <form method="POST">
@@ -220,7 +219,7 @@
 
     <script>
         /* ===== Countdown Timer ===== */
-        let time = 300; // 5 minutes
+        let time = 1800; // 30 minutes — enough time for delayed email delivery
         const countdown = document.getElementById("countdown");
         const timerBox = document.getElementById("timer-box");
 
@@ -232,7 +231,7 @@
                 (minutes < 10 ? "0" + minutes : minutes) + ":" +
                 (seconds < 10 ? "0" + seconds : seconds);
 
-            if (time <= 30) {
+            if (time <= 60) {
                 timerBox.style.animation = "pulse 1s infinite";
             }
 
