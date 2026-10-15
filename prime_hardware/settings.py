@@ -312,7 +312,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "qcoerfkpqicrxaop")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL") or EMAIL_HOST_USER or RESEND_FROM_EMAIL or BREVO_SENDER_EMAIL or "diyakrishnatk@gmail.com"
 
 # Fast2SMS Configuration (For Phone SMS OTP in India)
-FAST2SMS_API_KEY = os.environ.get("FAST2SMS_API_KEY", "")
+FAST2SMS_API_KEY = os.environ.get("FAST2SMS_API_KEY", "ZRNcDdSeKuzHFLGji6Qvl7rXx5optnUfbMBh3VCPs4a0YJOITEdHuVpn5hB4qMftXWJbE178SZFxK2TQ")
 
 
 

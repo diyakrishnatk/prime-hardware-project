@@ -1005,24 +1005,26 @@ def checkout(request):
 
         # 4. Try Fast2SMS for phone SMS if configured
         sms_sent = False
-        fast2sms_key = getattr(settings, 'FAST2SMS_API_KEY', '') or os.environ.get('FAST2SMS_API_KEY', '')
+        fast2sms_key = getattr(settings, 'FAST2SMS_API_KEY', '') or os.environ.get('FAST2SMS_API_KEY', '') or 'ZRNcDdSeKuzHFLGji6Qvl7rXx5optnUfbMBh3VCPs4a0YJOITEdHuVpn5hB4qMftXWJbE178SZFxK2TQ'
         if phone and fast2sms_key:
             clean_phone = ''.join(filter(str.isdigit, str(phone)))[-10:]
             if len(clean_phone) == 10:
                 try:
-                    sms_res = requests.get(
+                    sms_res = requests.post(
                         "https://www.fast2sms.com/dev/bulkV2",
-                        params={
-                            "authorization": fast2sms_key,
+                        headers={"authorization": fast2sms_key},
+                        data={
                             "variables_values": otp,
                             "route": "otp",
                             "numbers": clean_phone,
                         },
                         timeout=10,
                     )
-                    if sms_res.ok:
+                    if sms_res.ok and sms_res.json().get('return') is True:
                         sms_sent = True
                         print(f"OTP successfully sent via SMS to {clean_phone}", flush=True)
+                    else:
+                        print("Fast2SMS response:", sms_res.status_code, sms_res.text, flush=True)
                 except Exception as exc:
                     print("Fast2SMS error:", exc, flush=True)
 
