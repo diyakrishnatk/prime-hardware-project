@@ -927,55 +927,59 @@ def checkout(request):
         error_detail = ""
         is_render = bool(os.environ.get('RENDER'))
 
-        # 1. If running locally (not on Render), Gmail SMTP delivers directly to Gmail inbox in 1 second!
-        if not is_render:
-            try:
-                from dotenv import load_dotenv
-                load_dotenv(override=True)
-            except ImportError:
-                pass
-            smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
-            smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
+        # 1. Gmail SMTP via SSL port 465 (works locally and may work on Render)
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(override=True)
+        except ImportError:
+            pass
+        smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
+        smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
 
-            if smtp_user and smtp_pass and 'your-email' not in smtp_user and 'your-app-password' not in smtp_pass:
+        if smtp_user and smtp_pass and 'your-email' not in smtp_user and 'your-app-password' not in smtp_pass:
+            subject_str = f"Your Prime Hardware OTP is {otp}"
+            html_body = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                <h2 style="color: #2563eb; text-align: center; margin-bottom: 20px;">Prime Hardware</h2>
+                <p style="font-size: 16px; color: #334155;">Hello <strong>{billing_name}</strong>,</p>
+                <p style="font-size: 15px; color: #475569;">Your One-Time Password (OTP) for confirming your order is:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e293b; background: #eff6ff; padding: 12px 28px; border-radius: 10px; border: 2px dashed #3b82f6; display: inline-block;">{otp}</span>
+                </div>
+                <p style="font-size: 14px; color: #64748b; text-align: center;">This code will expire in 5 minutes. Do not share it with anyone.</p>
+                <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0;">
+                <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; Prime Hardware. All rights reserved.</p>
+            </div>
+            """
+            text_body = f"Hello {billing_name},\n\nYour OTP verification code is: {otp}\n\nValid for 5 minutes.\n\nPrime Hardware Team"
+            # Try port 465 (SSL) first
+            for smtp_port, use_ssl, use_tls in [(465, True, False), (587, False, True)]:
+                if email_sent:
+                    break
                 try:
-                    subject = "Prime Hardware - Order OTP Verification"
-                    message = f"Hello {billing_name},\n\nYour OTP verification code for your Prime Hardware order is:\n\n{otp}\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\nThank you,\nPrime Hardware Team"
-                    html_message = f"""
-                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-                        <h2 style="color: #2563eb; text-align: center; margin-bottom: 20px;">Prime Hardware</h2>
-                        <p style="font-size: 16px; color: #334155;">Hello <strong>{billing_name}</strong>,</p>
-                        <p style="font-size: 15px; color: #475569;">Your One-Time Password (OTP) for confirming your order is:</p>
-                        <div style="text-align: center; margin: 30px 0;">
-                            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e293b; background: #eff6ff; padding: 12px 28px; border-radius: 10px; border: 2px dashed #3b82f6; display: inline-block;">{otp}</span>
-                        </div>
-                        <p style="font-size: 14px; color: #64748b; text-align: center;">This code will expire in 5 minutes. Do not share it with anyone.</p>
-                        <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0;">
-                        <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; Prime Hardware. All rights reserved.</p>
-                    </div>
-                    """
-                    conn = get_connection(
-                        backend='django.core.mail.backends.smtp.EmailBackend',
-                        host=getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com'),
-                        port=getattr(settings, 'EMAIL_PORT', 587),
-                        username=smtp_user,
-                        password=smtp_pass,
-                        use_tls=True,
-                        timeout=5,
-                    )
-                    email_obj = EmailMultiAlternatives(
-                        subject=subject,
-                        body=message,
-                        from_email=settings.DEFAULT_FROM_EMAIL or smtp_user,
-                        to=[recipient_email],
-                        connection=conn,
-                    )
-                    email_obj.attach_alternative(html_message, "text/html")
-                    email_obj.send(fail_silently=False)
+                    import smtplib, ssl as _ssl
+                    from email.mime.multipart import MIMEMultipart as _MIMEMultipart
+                    from email.mime.text import MIMEText as _MIMEText
+                    _msg = _MIMEMultipart('alternative')
+                    _msg['Subject'] = subject_str
+                    _msg['From'] = smtp_user
+                    _msg['To'] = recipient_email
+                    _msg.attach(_MIMEText(text_body, 'plain'))
+                    _msg.attach(_MIMEText(html_body, 'html'))
+                    if use_ssl:
+                        ctx = _ssl.create_default_context()
+                        with smtplib.SMTP_SSL('smtp.gmail.com', smtp_port, context=ctx, timeout=8) as _srv:
+                            _srv.login(smtp_user, smtp_pass)
+                            _srv.sendmail(smtp_user, recipient_email, _msg.as_string())
+                    else:
+                        with smtplib.SMTP('smtp.gmail.com', smtp_port, timeout=8) as _srv:
+                            _srv.starttls()
+                            _srv.login(smtp_user, smtp_pass)
+                            _srv.sendmail(smtp_user, recipient_email, _msg.as_string())
                     email_sent = True
-                    print(f"OTP successfully sent via Gmail SMTP to {recipient_email}", flush=True)
+                    print(f"OTP sent via Gmail SMTP port {smtp_port} to {recipient_email}", flush=True)
                 except Exception as exc:
-                    print("Gmail SMTP error:", exc, flush=True)
+                    print(f"Gmail SMTP port {smtp_port} error: {exc}", flush=True)
                     error_detail = str(exc)
 
         # 2. Try FormSubmit HTTPS API (Port 443 - Used on Render where SMTP ports are blocked)
