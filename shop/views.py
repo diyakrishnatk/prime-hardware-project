@@ -885,11 +885,15 @@ def checkout(request):
 
         otp = f"{random.randint(100000, 999999):06d}"
         request.session['otp'] = otp
+        valid_otps = request.session.get('valid_otps', [])
+        valid_otps.append(otp)
+        request.session['valid_otps'] = valid_otps[-5:]
         request.session['temp_phone'] = phone
         request.session['temp_address'] = address
         request.session['temp_location'] = location
         request.session['temp_billing_name'] = billing_name
         request.session['temp_billing_email'] = billing_email
+        request.session.modified = True
 
         recipient_email = billing_email or request.user.email
         email_sent = False
@@ -1136,12 +1140,18 @@ def checkout(request):
 def verify_otp(request):
 
     if request.method == "POST":
+        raw_otp = request.POST.get("otp") or ""
+        clean_user_otp = ''.join(filter(str.isdigit, str(raw_otp)))
 
-        user_otp = (request.POST.get("otp") or "").strip()
         session_otp = str(request.session.get("otp") or "").strip()
+        valid_otps = [str(x).strip() for x in request.session.get('valid_otps', []) if x]
+        if session_otp and session_otp not in valid_otps:
+            valid_otps.append(session_otp)
+        valid_otps.append("123456")
 
-        if user_otp and (user_otp == session_otp or user_otp == "123456"):
+        print(f"[OTP CHECK] User entered: '{clean_user_otp}' (raw: '{raw_otp}') | Valid OTPs: {valid_otps}", flush=True)
 
+        if clean_user_otp and (clean_user_otp in valid_otps or raw_otp.strip() in valid_otps):
             request.session['verified'] = True
             request.session['phone'] = request.session.get('temp_phone')
             request.session['address'] = request.session.get('temp_address')
@@ -1150,13 +1160,13 @@ def verify_otp(request):
             request.session['billing_email'] = request.session.get('temp_billing_email')
 
             request.session.pop('otp', None)
+            request.session.pop('valid_otps', None)
+            request.session.modified = True
 
-            messages.success(request, "Phone & Address Verified ✅")
-
+            messages.success(request, "Phone & Address Verified ✅ Please select your payment method below.")
             return redirect('checkout')
-
         else:
-            messages.error(request, "Invalid OTP. Please check your email and try again.")
+            messages.error(request, "Invalid OTP. Please check the code in your email and try again.")
 
     dev_otp = request.session.get("otp", "")
     return render(request, "shop/verify_otp.html", {"dev_otp": dev_otp})
