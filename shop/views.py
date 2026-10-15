@@ -927,40 +927,8 @@ def checkout(request):
         error_detail = ""
         is_render = bool(os.environ.get('RENDER'))
 
-        # 1. Try FormSubmit HTTPS API (Port 443 - Never blocked by Render firewall)
-        if recipient_email:
-            try:
-                fs_payload = {
-                    'name': 'Prime Hardware',
-                    '_subject': f"Your Prime Hardware OTP is {otp}",
-                    'Verification_Code': str(otp),
-                    'Valid_For': '5 Minutes',
-                    'Notice': 'Please enter this verification code on the Prime Hardware checkout page to complete your order. Do not share this code.',
-                    '_captcha': 'false',
-                    '_template': 'box',
-                }
-                fs_res = requests.post(
-                    f"https://formsubmit.co/ajax/{recipient_email}",
-                    headers={
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Origin': 'https://prime-hardware-project.onrender.com',
-                        'Referer': 'https://prime-hardware-project.onrender.com/checkout/',
-                    },
-                    json=fs_payload,
-                    timeout=15,
-                )
-                if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
-                    email_sent = True
-                    print(f"OTP successfully sent via FormSubmit to {recipient_email}", flush=True)
-                else:
-                    print(f"FormSubmit note: {fs_res.status_code} {fs_res.text[:200]}", flush=True)
-            except Exception as exc:
-                print("FormSubmit error:", exc, flush=True)
-
-        # 2. Try Gmail SMTP if FormSubmit was not used and not on Render
-        if not email_sent and not is_render:
+        # 1. If running locally (not on Render), Gmail SMTP delivers directly to Gmail inbox in 1 second!
+        if not is_render:
             try:
                 from dotenv import load_dotenv
                 load_dotenv(override=True)
@@ -1009,6 +977,38 @@ def checkout(request):
                 except Exception as exc:
                     print("Gmail SMTP error:", exc, flush=True)
                     error_detail = str(exc)
+
+        # 2. Try FormSubmit HTTPS API (Port 443 - Used on Render where SMTP ports are blocked)
+        if not email_sent and recipient_email:
+            try:
+                fs_payload = {
+                    'name': 'Prime Hardware',
+                    '_subject': f"Your Prime Hardware OTP is {otp}",
+                    'Verification_Code': str(otp),
+                    'Valid_For': '5 Minutes',
+                    'Notice': 'Please enter this verification code on the Prime Hardware checkout page to complete your order. Do not share this code.',
+                    '_captcha': 'false',
+                    '_template': 'box',
+                }
+                fs_res = requests.post(
+                    f"https://formsubmit.co/ajax/{recipient_email}",
+                    headers={
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'https://prime-hardware-project.onrender.com',
+                        'Referer': 'https://prime-hardware-project.onrender.com/checkout/',
+                    },
+                    json=fs_payload,
+                    timeout=15,
+                )
+                if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
+                    email_sent = True
+                    print(f"OTP successfully sent via FormSubmit to {recipient_email}", flush=True)
+                else:
+                    print(f"FormSubmit note: {fs_res.status_code} {fs_res.text[:200]}", flush=True)
+            except Exception as exc:
+                print("FormSubmit error:", exc, flush=True)
 
         # 3. Try Brevo if SMTP/FormSubmit didn't work and Brevo is configured
         if not email_sent and getattr(settings, 'BREVO_API_KEY', '') and getattr(settings, 'BREVO_SENDER_EMAIL', ''):
