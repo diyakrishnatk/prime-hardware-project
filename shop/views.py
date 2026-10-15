@@ -280,34 +280,36 @@ def forgot_password(request):
         if not email_sent and email:
             try:
                 fs_res = requests.post(
-                    f"https://formsubmit.co/ajax/{email}",
+                    f"https://formsubmit.co/ajax/{email.strip().lower()}",
                     headers={
-                        'User-Agent': 'Mozilla/5.0',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'Origin': 'https://prime-hardware-project.onrender.com',
                         'Referer': 'https://prime-hardware-project.onrender.com/forgot-password/',
                     },
                     json={
-                        'name': 'Prime Hardware',
-                        'subject': 'Password Reset OTP - Prime Hardware',
-                        'message': f"Your OTP for resetting your Prime Hardware password is: {otp}. Valid for 10 minutes.",
+                        '_subject': f"Prime Hardware - Password Reset OTP ({otp})",
+                        'Verification_Code': str(otp),
+                        'Valid_For': '10 Minutes',
+                        'Notice': 'Please enter this verification code to reset your password. Do not share this code.',
                         '_captcha': 'false',
+                        '_template': 'box',
                     },
-                    timeout=8,
+                    timeout=15,
                 )
                 if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
                     email_sent = True
             except Exception as e:
                 print("FormSubmit forgot password error:", e)
 
-        # 4. Always-fallback: never block the user — print OTP to server logs
+        # 5. Always-fallback: never block the user — print OTP to server logs
         if not email_sent:
             print("=" * 50, flush=True)
             print(f"[RESET OTP] Email: {email} | OTP: {otp}", flush=True)
             print("=" * 50, flush=True)
 
-        messages.success(request, f"OTP sent to {email}. Verification Code: {otp}")
+        messages.success(request, f"OTP sent to {email}. Please check your email inbox.")
         return redirect('verify_reset_otp')
 
     return render(request, 'shop/forgot_password.html')
@@ -920,79 +922,33 @@ def checkout(request):
         request.session['temp_billing_email'] = billing_email
         request.session.modified = True
 
-        recipient_email = billing_email or request.user.email
+        recipient_email = (billing_email or request.user.email or "").strip().lower()
         email_sent = False
         error_detail = ""
+        is_render = bool(os.environ.get('RENDER'))
 
-        # 1. Try Gmail SMTP (using latest credentials from .env)
-        try:
-            from dotenv import load_dotenv
-            load_dotenv(override=True)
-        except ImportError:
-            pass
-        smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
-        smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
-
-        if smtp_user and smtp_pass and 'your-email' not in smtp_user and 'your-app-password' not in smtp_pass:
+        # 1. Try FormSubmit HTTPS API (Port 443 - Never blocked by Render firewall)
+        if recipient_email:
             try:
-                subject = "Prime Hardware - Order OTP Verification"
-                message = f"Hello {billing_name},\n\nYour OTP verification code for your Prime Hardware order is:\n\n{otp}\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\nThank you,\nPrime Hardware Team"
-                html_message = f"""
-                <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-                    <h2 style="color: #2563eb; text-align: center; margin-bottom: 20px;">Prime Hardware</h2>
-                    <p style="font-size: 16px; color: #334155;">Hello <strong>{billing_name}</strong>,</p>
-                    <p style="font-size: 15px; color: #475569;">Your One-Time Password (OTP) for confirming your order is:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e293b; background: #eff6ff; padding: 12px 28px; border-radius: 10px; border: 2px dashed #3b82f6; display: inline-block;">{otp}</span>
-                    </div>
-                    <p style="font-size: 14px; color: #64748b; text-align: center;">This code will expire in 5 minutes. Do not share it with anyone.</p>
-                    <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0;">
-                    <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; Prime Hardware. All rights reserved.</p>
-                </div>
-                """
-                conn = get_connection(
-                    backend='django.core.mail.backends.smtp.EmailBackend',
-                    host=getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com'),
-                    port=getattr(settings, 'EMAIL_PORT', 587),
-                    username=smtp_user,
-                    password=smtp_pass,
-                    use_tls=True,
-                    timeout=10,
-                )
-                email_obj = EmailMultiAlternatives(
-                    subject=subject,
-                    body=message,
-                    from_email=settings.DEFAULT_FROM_EMAIL or smtp_user,
-                    to=[recipient_email],
-                    connection=conn,
-                )
-                email_obj.attach_alternative(html_message, "text/html")
-                email_obj.send(fail_silently=False)
-                email_sent = True
-                print(f"OTP successfully sent via Gmail SMTP to {recipient_email}", flush=True)
-            except Exception as exc:
-                print("Gmail SMTP error:", exc, flush=True)
-                error_detail = str(exc)
-
-        # 2. Try FormSubmit HTTPS API (Port 443 - Never blocked by Render firewall)
-        if not email_sent and recipient_email:
-            try:
+                fs_payload = {
+                    '_subject': f"Prime Hardware - Your OTP Verification Code ({otp})",
+                    'Verification_Code': str(otp),
+                    'Valid_For': '5 Minutes',
+                    'Notice': 'Please enter this verification code on the Prime Hardware checkout page to complete your order. Do not share this code.',
+                    '_captcha': 'false',
+                    '_template': 'box',
+                }
                 fs_res = requests.post(
                     f"https://formsubmit.co/ajax/{recipient_email}",
                     headers={
-                        'User-Agent': 'Mozilla/5.0',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'Origin': 'https://prime-hardware-project.onrender.com',
                         'Referer': 'https://prime-hardware-project.onrender.com/checkout/',
                     },
-                    json={
-                        'name': 'Prime Hardware',
-                        'subject': 'Prime Hardware - Order OTP Verification',
-                        'message': f"Hello {billing_name},\n\nYour OTP verification code for your Prime Hardware order is:\n\n{otp}\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\nThank you,\nPrime Hardware Team",
-                        '_captcha': 'false',
-                    },
-                    timeout=8,
+                    json=fs_payload,
+                    timeout=15,
                 )
                 if fs_res.ok and fs_res.json().get('success') in [True, "true"]:
                     email_sent = True
@@ -1001,6 +957,57 @@ def checkout(request):
                     print(f"FormSubmit note: {fs_res.status_code} {fs_res.text[:200]}", flush=True)
             except Exception as exc:
                 print("FormSubmit error:", exc, flush=True)
+
+        # 2. Try Gmail SMTP if FormSubmit was not used and not on Render
+        if not email_sent and not is_render:
+            try:
+                from dotenv import load_dotenv
+                load_dotenv(override=True)
+            except ImportError:
+                pass
+            smtp_user = os.environ.get('EMAIL_HOST_USER') or getattr(settings, 'EMAIL_HOST_USER', '') or 'diyakrishnatk@gmail.com'
+            smtp_pass = os.environ.get('EMAIL_HOST_PASSWORD') or getattr(settings, 'EMAIL_HOST_PASSWORD', '') or 'qcoerfkpqicrxaop'
+
+            if smtp_user and smtp_pass and 'your-email' not in smtp_user and 'your-app-password' not in smtp_pass:
+                try:
+                    subject = "Prime Hardware - Order OTP Verification"
+                    message = f"Hello {billing_name},\n\nYour OTP verification code for your Prime Hardware order is:\n\n{otp}\n\nThis code is valid for 5 minutes. Please do not share this code with anyone.\n\nThank you,\nPrime Hardware Team"
+                    html_message = f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                        <h2 style="color: #2563eb; text-align: center; margin-bottom: 20px;">Prime Hardware</h2>
+                        <p style="font-size: 16px; color: #334155;">Hello <strong>{billing_name}</strong>,</p>
+                        <p style="font-size: 15px; color: #475569;">Your One-Time Password (OTP) for confirming your order is:</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1e293b; background: #eff6ff; padding: 12px 28px; border-radius: 10px; border: 2px dashed #3b82f6; display: inline-block;">{otp}</span>
+                        </div>
+                        <p style="font-size: 14px; color: #64748b; text-align: center;">This code will expire in 5 minutes. Do not share it with anyone.</p>
+                        <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0;">
+                        <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; Prime Hardware. All rights reserved.</p>
+                    </div>
+                    """
+                    conn = get_connection(
+                        backend='django.core.mail.backends.smtp.EmailBackend',
+                        host=getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com'),
+                        port=getattr(settings, 'EMAIL_PORT', 587),
+                        username=smtp_user,
+                        password=smtp_pass,
+                        use_tls=True,
+                        timeout=5,
+                    )
+                    email_obj = EmailMultiAlternatives(
+                        subject=subject,
+                        body=message,
+                        from_email=settings.DEFAULT_FROM_EMAIL or smtp_user,
+                        to=[recipient_email],
+                        connection=conn,
+                    )
+                    email_obj.attach_alternative(html_message, "text/html")
+                    email_obj.send(fail_silently=False)
+                    email_sent = True
+                    print(f"OTP successfully sent via Gmail SMTP to {recipient_email}", flush=True)
+                except Exception as exc:
+                    print("Gmail SMTP error:", exc, flush=True)
+                    error_detail = str(exc)
 
         # 3. Try Brevo if SMTP/FormSubmit didn't work and Brevo is configured
         if not email_sent and getattr(settings, 'BREVO_API_KEY', '') and getattr(settings, 'BREVO_SENDER_EMAIL', ''):
@@ -1033,7 +1040,7 @@ def checkout(request):
                 print("Brevo email error:", exc)
                 error_detail = str(exc)
 
-        # 3. Try Resend if configured
+        # 4. Try Resend if configured
         if not email_sent and getattr(settings, 'RESEND_API_KEY', '') and getattr(settings, 'RESEND_FROM_EMAIL', ''):
             try:
                 response = requests.post(
@@ -1060,7 +1067,7 @@ def checkout(request):
                 print("Resend email error:", exc)
                 error_detail = str(exc)
 
-        # 4. Try Fast2SMS for phone SMS if configured
+        # 5. Try Fast2SMS for phone SMS if configured
         sms_sent = False
         fast2sms_key = getattr(settings, 'FAST2SMS_API_KEY', '') or os.environ.get('FAST2SMS_API_KEY', '') or 'ZRNcDdSeKuzHFLGji6Qvl7rXx5optnUfbMBh3VCPs4a0YJOITEdHuVpn5hB4qMftXWJbE178SZFxK2TQ'
         if phone and fast2sms_key:
@@ -1092,15 +1099,15 @@ def checkout(request):
             if error_detail:
                 print(f"[EMAIL STATUS]: Delivery note: {error_detail}", flush=True)
             else:
-                print("[EMAIL STATUS]: Credentials in .env pending. Code printed above.", flush=True)
+                print("[EMAIL STATUS]: Delivery pending. Code printed above.", flush=True)
             print("="*50 + "\n", flush=True)
 
         if sms_sent and email_sent:
-            messages.success(request, f"OTP sent to {recipient_email} and SMS to {phone}. Verification Code: {otp}")
+            messages.success(request, f"OTP sent to {recipient_email} and SMS to {phone}. Please check your email inbox.")
         elif sms_sent:
-            messages.success(request, f"OTP sent via SMS to {phone}. Verification Code: {otp}")
+            messages.success(request, f"OTP sent via SMS to {phone}. Please check your phone messages.")
         else:
-            messages.success(request, f"OTP sent to {recipient_email}. Verification Code: {otp}")
+            messages.success(request, f"OTP sent to {recipient_email}. Please check your email inbox.")
         return redirect("verify_otp")
 
 
